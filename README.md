@@ -1,5 +1,5 @@
 # Introduction
-2D-GP is a FORTRAN project designed to numerically solve the Gross-Pitaevskii equation (GPE) in two dimensions (2D). Solving the GPE allows for qualitatively accurate simulations of Bose-Eintein Condensates at zero temperature.
+2D-GP is a FORTRAN project designed to numerically solve the Gross-Pitaevskii equation (GPE) in two dimensions (2D). Solving the GPE allows for qualitatively accurate simulations of Bose-Eintein Condensates (BECs) at zero temperature.
 
 ### Numerical Methods
 2D-GP solves the GPE using 4th order Runge-Kutta time stepping on a grid of points with regular spacing in both the x and y dimensions. User defined grid spacing and time step is supported.
@@ -22,3 +22,12 @@ To run a simulation with custom parameters
 *  Run `./gp&` to start the simulation.
 
 A full list of editable parameters can be found at the end of this document.
+
+# Gross-Pitaevskii Equation
+2D-GP solves the GPE in 2 distinct and different dimensionless forms: the homogenous system and the harmonic trapped system.  
+
+The homogeneous system is used to fill the entire computational box with fluid, emulating superfluid liquid helium II. The harmonic trapped case is employed to emulate quasi-2d BEC experiments.
+
+Both forms of the governing equation are shown below.
+### Homogenoeus System
+![H_GPE]()
