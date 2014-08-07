@@ -1,6 +1,4 @@
-# 2D-GP
-
-## Introduction
+# Introduction
 2D-GP is a FORTRAN project designed to numerically solve the Gross-Pitaevskii equation (GPE) in two dimensions (2D). Solving the GPE allows for qualitatively accurate simulations of Bose-Eintein Condensates at zero temperature.
 
 ### Numerical Methods
@@ -22,3 +20,5 @@
 To run a simulation with custom parameters
 *  Edit `params.in` and run `make2dgp` again to reflect the changes.
 *  Run `./gp&` to start the simulation.
+
+A full list of editable parameters can be found at the end of this document.
