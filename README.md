@@ -31,5 +31,5 @@ The homogeneous system is used to fill the entire computational box with fluid, 
 Both forms of the governing equation are shown below.
 ### Homogenoeus System
 The homogenous GPE is defined as  
-![H_GPE](https://raw.githubusercontent.com/Extigy/2D-GP/params/images/homg_gpe.gif),  
-where ![psi](https://raw.githubusercontent.com/Extigy/2D-GP/params/images/psi.gif) is the condensate wavefunction, *V* is a potential allowing for obstacles and ![v_ob](https://raw.githubusercontent.com/Extigy/2D-GP/params/images/v_ob.gif) is the fluid velocity along the x direction.
+![H_GPE](http://raw.githubusercontent.com/Extigy/2D-GP/params/images/homg_gpe.gif),  
+where ![psi](http://raw.githubusercontent.com/Extigy/2D-GP/params/images/psi.gif) is the condensate wavefunction, *V* is a potential allowing for obstacles and ![v_ob](http://github.com/Extigy/2D-GP/blob/params/images/v_ob.gif) is the fluid velocity along the x direction.
