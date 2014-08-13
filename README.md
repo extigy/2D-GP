@@ -30,8 +30,8 @@ The homogeneous system is used to fill the entire computational box with fluid, 
 
 Both forms of the governing equation are shown below.
 ### Homogenoeus System
-The dimensionless homogenous GPE is defined as  
-![H_GPE](http://raw.githubusercontent.com/Extigy/2D-GP/params/images/homg_gpe.gif),  
+The dimensionless homogenous GPE is defined as   
+![H_GPE](http://latex.codecogs.com/gif.latex?i\frac{\partial%20\psi}{\partial%20t}%20%3D%20-\frac{1}{2}%20\nabla^2\psi%20&plus;%20|\psi|^2\psi%20&plus;%20V\psi%20-\psi + iv_{ob}\frac{\partial%20\psi}{\partial%20x}),  
 where ![psi](http://raw.githubusercontent.com/Extigy/2D-GP/params/images/psi.gif) is the condensate wavefunction, *V* is a potential allowing for obstacles and ![v_ob](http://github.com/Extigy/2D-GP/blob/params/images/v_ob.gif) is the fluid velocity along the x direction.  
 
 The above version of the GPE is valid when properties are scaled with the so called `natural units',
@@ -40,7 +40,7 @@ The above version of the GPE is valid when properties are scaled with the so cal
 -----
 ### Harmonically Trapped System
 The dimensionless GPE in a harmonically trapped system is defined as  
-![T_GPE](),  
+![T_GPE](http://latex.codecogs.com/gif.latex?i\frac{\partial%20\psi}{\partial%20t}%20%3D%20-\frac{1}{2}%20\nabla^2\psi%20&plus;%20g_{2D}|\psi|^2\psi%20&plus;%20V\psi%20-\mu_{2D}\psi),  
 where ![psi](http://raw.githubusercontent.com/Extigy/2D-GP/params/images/psi.gif) is the condensate wavefunction,...
 
 The above version of the GPE is valid when...
