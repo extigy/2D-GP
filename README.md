@@ -16,15 +16,16 @@
 
 ### Editing Parameters
 To run a simulation with custom parameters
+*  Create a simulation as in **Running a Simulation** but do not run `./gp&`.
 *  Edit `params.in` and run `make2dgp` again to reflect the changes.
 *  Run `./gp&` to start the simulation.
 
-A full list of editable parameters can be found at the end of this document. Hopefully, most editable parameters can be left as default.
+Editable parameters along with descriptions and their default values can be found throughout this document. Hopefully, most editable parameters can be left as default.
 
 # Gross-Pitaevskii Equation
 2D-GP solves the GPE in 2 different dimensionless forms: the homogeneous system and the harmonically trapped system.  
 
-The homogeneous system is used to fill the entire computational box with fluid, emulating superfluid liquid helium II. The harmonic trapped case is employed to emulate quasi-2d BEC experiments when confined using a harmonic trap.
+The homogeneous system is used to fill the entire computational box with fluid, emulating superfluid liquid helium II. The harmonic trapped case is employed to emulate quasi-2D BEC experiments when confined using a harmonic trap.
 
 ---
 ### Homogeneous System
@@ -37,7 +38,11 @@ This version of the GPE is valid when properties are scaled with the so called '
 
 ![Natural Scaling](http://latex.codecogs.com/gif.latex?%5Cdpi%7B110%7D%20%5C%5C%5Cmathrm%7BDensity%7Eat%7Einfinity%3A%7D%7En_0%20%5C%5C%5Cmathrm%7BLength%3A%7D%7E%5Cxi%20%3D%20%5Cfrac%7B%5Chbar%7D%7B%5Csqrt%7Bm%5Cmu%7D%7D%20%5C%5C%5Cmathrm%7BEnergy%3A%7D%7E%5Cmu%20%3D%20n_0g%20%5C%5C%5Cmathrm%7BVelocity%3A%7D%7Ec%3D%5Cfrac%7B%5Csqrt%7Bn_0g%7D%7D%7Bm%7D%20%5C%5C%5Cmathrm%7BTime%3A%7D%7E%5Cfrac%7B%5Cxi%7D%7Bc%7D)
 
-The following parameters are related to the homogeneous equation.
+Running multiple simulations sequentially at varying velocities is supported. The solver will first run a simulation at the ![v_ob](http://latex.codecogs.com/gif.latex?v_{ob}) defined by `VOBS`.
+Once complete the solver will increase ![v_ob](http://latex.codecogs.com/gif.latex?v_{ob}) by the amount defined by `VOBST` and rerun the simulation. This will continue until ![v_ob](http://latex.codecogs.com/gif.latex?v_{ob})
+is larger than the value defined by `VOBE` at which point the solver will terminate.
+
+The following parameters can be modified,
 
 Parameter | Default | Explanation
 --- | --- | ---
@@ -98,3 +103,12 @@ Parameter | Default | Explanation
 `DTSIZE` | `0.001` | Time step size in dimensionless units
 `ISTEPS` | `2000` | Number of iterations to run the solver in the *imaginary time method*
 `NSTEPS` | `10000` | Number of iterations to run the solver in real time
+`noiseamp` | `0` | Amplitude of random noise to add to the ground state initial condition
+
+### Boundary Conditions
+Both **reflective** and **periodic** boundary conditions are supported.
+
+Parameter | Default | Explanation
+--- | --- | ---
+`BCX` | `0` | Boundary conditions in the x direction - Set to `0` for **reflective**, `1` for **periodic**.
+`BCY` | `0` | Boundary conditions in the y direction - Set to `0` for **reflective**, `1` for **periodic**.
