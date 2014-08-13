@@ -1,7 +1,5 @@
 # Introduction
-2D-GP is a FORTRAN project designed to numerically solve the Gross-Pitaevskii equation (GPE) in two dimensions (2D). Solving the GPE allows for qualitatively accurate simulations of Bose-Eintein Condensates (BECs) at zero temperature.
-
-### Numerical Methods
+2D-GP is a FORTRAN project designed to numerically solve the Gross-Pitaevskii equation (GPE) in two dimensions (2D). Solving the GPE allows for qualitatively accurate simulations of Bose-Eintein Condensates (BECs) at zero temperature.  
 2D-GP solves the GPE using 4th order Runge-Kutta time stepping on a grid of points with regular spacing in both the x and y dimensions. User defined grid spacing and time step is supported.
 
 ### Installation
@@ -69,4 +67,34 @@ Parameter | Default | Explanation
 `harm_osc_C` | `100` | Value of ![g2d](http://latex.codecogs.com/gif.latex?g_{2D})
 `harm_osc_mu` | `5` | Value of ![mu2d](http://latex.codecogs.com/gif.latex?%5Cmu_{2D})
 `enableTrap` |`.true.`| Enable or disable the trapping potential
-***
+---
+### Damped GPE
+For both cases of the GPE, an optional damping parameter can be applied, allowing for simulations using the Damped GPE. The damped version of the GPE as a rough and rudimentary simulation of finite temperature effects on BECs.  
+The damped GPE is found by replacing the left hand side of the GPE with,  
+![T_GPE][dgpe]
+[dgpe]: http://latex.codecogs.com/gif.latex?(i-\gamma)%5Cfrac%7B%5Cpartial%5Cpsi%7D%7B%5Cpartial%20t%7D=
+where ![gamma](http://latex.codecogs.com/gif.latex?%5Cgamma) is a small positive real parameter controlling the strength of the damping.
+
+In damped GPE simulations, the condensate norm can also be renormalised at every iteration, preventing atom loss for large damping parameters.  
+
+Parameter | Default | Explanation
+--- | --- | ---
+`GAMMAC` | `0` | Value of ![gamma](http://latex.codecogs.com/gif.latex?%5Cgamma)
+`rtNorm` |`.false.`| If `.true.` the wavefunction is normalised at every time step
+---
+# Numerical Method
+2D-GP uses 4th order Runge-Kutta time stepping on a grid of points with regular spacing in both the x and y dimensions.  
+The solver begins by finding an inital condition using the *imaginary time method*, which obtains a steady solution known as the *ground state*. An optional random perturbation can then be applied to this initial condition.  
+The solver then runs in *real time* producing a solution to the GPE for the given parameters.
+
+
+The following parameters can be customised,  
+
+Parameter | Default | Explanation
+--- | --- | ---
+`NX` | `512` | Number of grid points in the x direction
+`NY` | `512` | Number of grid points in the y direction
+`DSPACE` | `0.05` | Grid spacing in dimensionless units
+`DTSIZE` | `0.001` | Time step size in dimensionless units
+`ISTEPS` | `2000` | Number of iterations to run the solver in the *imaginary time method*
+`NSTEPS` | `10000` | Number of iterations to run the solver in real time
