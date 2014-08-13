@@ -34,7 +34,7 @@ The dimensionless homogeneous GPE is defined as
 ![H_GPE](http://latex.codecogs.com/gif.latex?i%5Cfrac%7B%5Cpartial%5Cpsi%7D%7B%5Cpartial%20t%7D=-%5Cfrac%7B1%7D%7B2%7D%5Cnabla%5E2%5Cpsi%2B%7C%5Cpsi%7C%5E2%5Cpsi%2BV%5Cpsi-%5Cpsi%2Biv_%7Bob%7D%5Cfrac%7B%5Cpartial%5Cpsi%7D%7B%5Cpartial%20x%7D),  
 where ![psi](http://latex.codecogs.com/gif.latex?%5Cpsi) is the condensate wavefunction, ![V](http://latex.codecogs.com/gif.latex?V) is a potential allowing for obstacles and ![v_ob](http://latex.codecogs.com/gif.latex?v_{ob}) is the fluid velocity along the x direction.  
 
-The above version of the GPE is valid when properties are scaled with the so called '**natural units**'
+This version of the GPE is valid when properties are scaled with the so called '**natural units**'
 
 
 ![Natural Scaling](http://latex.codecogs.com/gif.latex?%5Cdpi%7B110%7D%20%5C%5C%5Cmathrm%7BDensity%7Eat%7Einfinity%3A%7D%7En_0%20%5C%5C%5Cmathrm%7BLength%3A%7D%7E%5Cxi%20%3D%20%5Cfrac%7B%5Chbar%7D%7B%5Csqrt%7Bm%5Cmu%7D%7D%20%5C%5C%5Cmathrm%7BEnergy%3A%7D%7E%5Cmu%20%3D%20n_0g%20%5C%5C%5Cmathrm%7BVelocity%3A%7D%7Ec%3D%5Cfrac%7B%5Csqrt%7Bn_0g%7D%7D%7Bm%7D%20%5C%5C%5Cmathrm%7BTime%3A%7D%7E%5Cfrac%7B%5Cxi%7D%7Bc%7D)
@@ -53,10 +53,10 @@ The dimensionless GPE in a harmonically trapped system is defined as
 ![T_GPE](http://latex.codecogs.com/gif.latex?i%5Cfrac%7B%5Cpartial%5Cpsi%7D%7B%5Cpartial%20t%7D=-%5Cfrac%7B1%7D%7B2%7D%5Cnabla%5E2%5Cpsi%2Bg_{2D}%7C%5Cpsi%7C%5E2%5Cpsi%2BV%5Cpsi-%5Cmu_{2D}%5Cpsi),  
 where ![psi](http://latex.codecogs.com/gif.latex?%5Cpsi) is the condensate wavefunction, ![g2d](http://latex.codecogs.com/gif.latex?g_{2D}) is the interaction strength, ![V](http://latex.codecogs.com/gif.latex?V) is a potential allowing for a harmonic trap and/or obstacles, and ![mu2d](http://latex.codecogs.com/gif.latex?%5Cmu_{2D}) is the chemical potential.
 
-The above version of the GPE is valid when properties are scaled with the so called '**harmonic oscillator units**'
+This version of the GPE is valid when properties are scaled with the so called '**harmonic oscillator units**'
 
 
-![HO_Scaling](http://latex.codecogs.com/gif.latex?\dpi{120}%20\\\mathrm{Energy%3A}~\mu%20%3D%20\hbar%20\omega_r%20\\\mathrm{Length%3A}~\l_r%20%3D%20\sqrt{\frac{\hbar}{m\omega_r}}%20\\\mathrm{Time%3A}~%20\omega_r^{-1},)
+![HO_Scaling](http://latex.codecogs.com/gif.latex?%5Cdpi{120}%20%5C%5C%5Cmathrm{Energy%3A}~%5Cmu%20%3D%20%5Chbar%20%5Comega_r%20%5C%5C%5Cmathrm{Length%3A}~%5Cl_r%20%3D%20%5Csqrt{%5Cfrac{%5Chbar}{m%5Comega_r}}%20%5C%5C%5Cmathrm{Time%3A}~%20%5Comega_r^{-1},)
 
 where ![omega_r](http://latex.codecogs.com/gif.latex?\omega_r) is the trap frequency in the radial direction.  
 *NB. Strictly speaking, a 2D mean-field description of an oblate trapped condensate is only valid when ![condition](http://latex.codecogs.com/png.download?%5Cdpi{110}Na%5Cleft(%5Cfrac{l_z}{l_r}%5Cright%29^3%5Cll1), where N is the number of atoms, a is the s-wave scattering length and ![l_z](http://latex.codecogs.com/gif.latex?\l_z%20%3D%20\sqrt{\frac{\hbar}{m\omega_z}}) and ![l_r](http://latex.codecogs.com/gif.latex?\l_r%20%3D%20\sqrt{\frac{\hbar}{m\omega_r}}) are the axial and radial harmonic oscillator lengths.*
