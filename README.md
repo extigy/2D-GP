@@ -21,15 +21,26 @@ To run a simulation with custom parameters
 *  Edit `params.in` and run `make2dgp` again to reflect the changes.
 *  Run `./gp&` to start the simulation.
 
-A full list of editable parameters can be found at the end of this document.
+A full list of editable parameters can be found at the end of this document. Hopefully, most editable parameters can be left as default.
 
 # Gross-Pitaevskii Equation
 2D-GP solves the GPE in 2 distinct and different dimensionless forms: the homogenous system and the harmonic trapped system.  
 
-The homogeneous system is used to fill the entire computational box with fluid, emulating superfluid liquid helium II. The harmonic trapped case is employed to emulate quasi-2d BEC experiments.
+The homogeneous system is used to fill the entire computational box with fluid, emulating superfluid liquid helium II. The harmonic trapped case is employed to emulate quasi-2d BEC experiments when confined using a harmonic trap.
 
 Both forms of the governing equation are shown below.
 ### Homogenoeus System
 The dimensionless homogenous GPE is defined as  
 ![H_GPE](http://raw.githubusercontent.com/Extigy/2D-GP/params/images/homg_gpe.gif),  
-where ![psi](http://raw.githubusercontent.com/Extigy/2D-GP/params/images/psi.gif) is the condensate wavefunction, *V* is a potential allowing for obstacles and ![v_ob](http://github.com/Extigy/2D-GP/blob/params/images/v_ob.gif) is the fluid velocity along the x direction.
+where ![psi](http://raw.githubusercontent.com/Extigy/2D-GP/params/images/psi.gif) is the condensate wavefunction, *V* is a potential allowing for obstacles and ![v_ob](http://github.com/Extigy/2D-GP/blob/params/images/v_ob.gif) is the fluid velocity along the x direction.  
+
+The above version of the GPE is valid when properties are scaled with the so called `natural units',
+
+![Natural Scaling](http://raw.githubusercontent.com/Extigy/2D-GP/params/images/natural_scale.gif)
+-----
+### Harmonically Trapped System
+The dimensionless GPE in a harmonically trapped system is defined as  
+![T_GPE](),  
+where ![psi](http://raw.githubusercontent.com/Extigy/2D-GP/params/images/psi.gif) is the condensate wavefunction,...
+
+The above version of the GPE is valid when...
