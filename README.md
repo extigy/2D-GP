@@ -31,7 +31,7 @@ The homogeneous system is used to fill the entire computational box with fluid, 
 ---
 ### Homogeneous System
 The dimensionless homogeneous GPE is defined as
-![H_GPE](http://latex.codecogs.com/gif.latex?i%5Cfrac%7B%5Cpartial%5Cpsi%7D%7B%5Cpartial%20t%7D=%5Cfrac%7B1%7D%7B2%7D%5Cnabla%5E2%5Cpsi%2B%7C%5Cpsi%7C%5E2%5Cpsi%2BV%5Cpsi-%5Cpsi%2Biv_%7Bob%7D%5Cfrac%7B%5Cpartial%5Cpsi%7D%7B%5Cpartial%20x%7D),  
+![H_GPE](http://latex.codecogs.com/gif.latex?i%5Cfrac%7B%5Cpartial%5Cpsi%7D%7B%5Cpartial%20t%7D=-%5Cfrac%7B1%7D%7B2%7D%5Cnabla%5E2%5Cpsi%2B%7C%5Cpsi%7C%5E2%5Cpsi%2BV%5Cpsi-%5Cpsi%2Biv_%7Bob%7D%5Cfrac%7B%5Cpartial%5Cpsi%7D%7B%5Cpartial%20x%7D),  
 where ![psi](http://latex.codecogs.com/gif.latex?%5Cpsi) is the condensate wavefunction, ![V](http://latex.codecogs.com/gif.latex?V) is a potential allowing for obstacles and ![v_ob](http://latex.codecogs.com/gif.latex?v_{ob}) is the fluid velocity along the x direction.  
 
 The above version of the GPE is valid when properties are scaled with the so called '**natural units**',  
@@ -47,8 +47,8 @@ Parameter | Default Value | Explanation
 `VOBST` | `1` | Increase ![v_ob](http://latex.codecogs.com/gif.latex?v_{ob}) by ![v_ob](http://latex.codecogs.com/gif.latex?\dpi{80}\mathrm{VOBST}/100) per simulation.
 ***
 ### Harmonically Trapped System
-The dimensionless GPE in a harmonically trapped system is defined as  
-![T_GPE](http://latex.codecogs.com/gif.latex?i\frac{\partial%20\psi}{\partial%20t}%20%3D%20-\frac{1}{2}%20\nabla^2\psi%20&plus;%20g_{2D}|\psi|^2\psi%20&plus;%20V\psi%20-\mu_{2D}\psi),  
-where ![psi](http://latex.codecogs.com/gif.latex?\psi) is the condensate wavefunction,...
+The dimensionless GPE in a harmonically trapped system is defined as
+![T_GPE](http://latex.codecogs.com/gif.latex?i%5Cfrac%7B%5Cpartial%5Cpsi%7D%7B%5Cpartial%20t%7D=-%5Cfrac%7B1%7D%7B2%7D%5Cnabla%5E2%5Cpsi%2Bg_{2D}%7C%5Cpsi%7C%5E2%5Cpsi%2BV%5Cpsi-\mu_{2D}%5Cpsi),
+where ![psi](http://latex.codecogs.com/gif.latex?%5Cpsi) is the condensate wavefunction,...
 
 The above version of the GPE is valid when...
