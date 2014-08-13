@@ -31,7 +31,7 @@ The homogeneous system is used to fill the entire computational box with fluid, 
 ---
 ### Homogeneous System
 The dimensionless homogeneous GPE is defined as
-![H_GPE](http://latex.codecogs.com/gif.latex?i\frac{\partial%20\psi}{\partial%20t}%20%3D%20-\frac{1}{2}%20\nabla^2\psi%20&plus;%20|\psi|^2\psi%20&plus;%20V\psi%20-\psi + iv_{ob}\frac{\partial%20\psi}{\partial%20x}),  
+![H_GPE](http://latex.codecogs.com/gif.latex?i\frac{\partial\psi}{\partial%20t}-\frac{1}{2}\nabla^2\psi+|\psi|^2\psi+V\psi-\psi+iv_{ob}\frac{\partial\psi}{\partial%20x}),  
 where ![psi](http://latex.codecogs.com/gif.latex?\psi) is the condensate wavefunction, ![V](http://latex.codecogs.com/gif.latex?V) is a potential allowing for obstacles and ![v_ob](http://latex.codecogs.com/gif.latex?v_{ob}) is the fluid velocity along the x direction.  
 
 The above version of the GPE is valid when properties are scaled with the so called '**natural units**',  
