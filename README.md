@@ -60,3 +60,13 @@ This version of the GPE is valid when properties are scaled with the so called '
 
 where ![omega_r](http://latex.codecogs.com/gif.latex?%5Comega_r) is the trap frequency in the radial direction.  
 *NB. Strictly speaking, a 2D mean-field description of an oblate trapped condensate is only valid when ![condition](http://latex.codecogs.com/gif.latex?%5Cdpi{100}Nal_z^3/l_r^3%5Cll1), where N is the number of atoms, a is the s-wave scattering length and ![l_z](http://latex.codecogs.com/gif.latex?%5Cdpi{100}%5Cl_z%20%3D%20%5Csqrt{%5Chbar/m%5Comega_z}) and ![l_r](http://latex.codecogs.com/gif.latex?%5Cdpi{100}%5Cl_r%20%3D%20%5Csqrt{%5Chbar/m%5Comega_r}) are the axial and radial harmonic oscillator lengths.*
+
+The following parameters are related to the harmonically trapped system.
+
+Parameter | Default Value | Explanation
+--- | --- | ---
+`RHSType` | `0` | GPE Type - Set to `0` for **natural units**, `1` for **harmonic oscillator units**.
+`harm_osc_C` | `100` | Value of ![g2d](http://latex.codecogs.com/gif.latex?g_{2D})
+`harm_osc_mu` | `5` | Value of ![mu2d](http://latex.codecogs.com/gif.latex?%5Cmu_{2D})
+`enableTrap` |`.true.`| Enable or disable the trapping potential
+***
