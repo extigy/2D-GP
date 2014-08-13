@@ -32,7 +32,7 @@ The homogeneous system is used to fill the entire computational box with fluid, 
 ### Homogeneous System
 The dimensionless homogeneous GPE is defined as
 ![H_GPE](http://latex.codecogs.com/gif.latex?i\frac{\partial\psi}{\partial%20t}-\frac{1}{2}\nabla^2\psi+|\psi|^2\psi+V\psi-\psi+iv_{ob}\frac{\partial\psi}{\partial%20x}),  
-where ![psi](http://latex.codecogs.com/gif.latex?\psi) is the condensate wavefunction, ![V](http://latex.codecogs.com/gif.latex?V) is a potential allowing for obstacles and ![v_ob](http://latex.codecogs.com/gif.latex?v_{ob}) is the fluid velocity along the x direction.  
+where ![psi](http://latex.codecogs.com/gif.latex?%5Cpsi) is the condensate wavefunction, ![V](http://latex.codecogs.com/gif.latex?V) is a potential allowing for obstacles and ![v_ob](http://latex.codecogs.com/gif.latex?v_{ob}) is the fluid velocity along the x direction.  
 
 The above version of the GPE is valid when properties are scaled with the so called '**natural units**',  
 ![Natural Scaling](http://latex.codecogs.com/gif.latex?%5Cdpi%7B110%7D%20%5C%5C%5Cmathrm%7BDensity%7Eat%7Einfinity%3A%7D%7En_0%20%5C%5C%5Cmathrm%7BLength%3A%7D%7E%5Cxi%20%3D%20%5Cfrac%7B%5Chbar%7D%7B%5Csqrt%7Bm%5Cmu%7D%7D%20%5C%5C%5Cmathrm%7BEnergy%3A%7D%7E%5Cmu%20%3D%20n_0g%20%5C%5C%5Cmathrm%7BVelocity%3A%7D%7Ec%3D%5Cfrac%7B%5Csqrt%7Bn_0g%7D%7D%7Bm%7D%20%5C%5C%5Cmathrm%7BTime%3A%7D%7E%5Cfrac%7B%5Cxi%7D%7Bc%7D)
