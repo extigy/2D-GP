@@ -72,7 +72,7 @@ Parameter | Default | Explanation
 For both cases of the GPE, an optional damping parameter can be applied, allowing for simulations using the Damped GPE. The damped version of the GPE as a rough and rudimentary simulation of finite temperature effects on BECs.  
 The damped GPE is found by replacing the left hand side of the GPE with,  
 ![T_GPE][dgpe]
-[dgpe]: http://latex.codecogs.com/gif.latex?(i-\gamma)%5Cfrac%7B%5Cpartial%5Cpsi%7D%7B%5Cpartial%20t%7D=
+[dgpe]: http://latex.codecogs.com/gif.latex?(i-%5Cgamma)%5Cfrac%7B%5Cpartial%5Cpsi%7D%7B%5Cpartial%20t%7D=
 where ![gamma](http://latex.codecogs.com/gif.latex?%5Cgamma) is a small positive real parameter controlling the strength of the damping.
 
 In damped GPE simulations, the condensate norm can also be renormalised at every iteration, preventing atom loss for large damping parameters.  
