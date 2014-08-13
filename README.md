@@ -42,13 +42,13 @@ The following parameters are related to the homogeneous equation.
 Parameter | Default Value | Explanation
 --- | --- | ---
 `RHSType` | `0` | GPE Type - Set to `0` for **natural units**, `1` for **harmonic oscillator units**.
-`VOBS` | `0` | First simulation's velocity. ![v_ob](http://latex.codecogs.com/gif.latex?v_{ob}=) ![v_ob](http://latex.codecogs.com/gif.latex?\dpi{80}\mathrm{VOBS}/100).
-`VOBE` | `0` | Final simulation's velocity. This is ![v_ob](http://latex.codecogs.com/gif.latex?v_{ob}=) ![v_ob](http://latex.codecogs.com/gif.latex?\dpi{80}\mathrm{VOBE}/100).
-`VOBST` | `1` | Increase ![v_ob](http://latex.codecogs.com/gif.latex?v_{ob}) by ![v_ob](http://latex.codecogs.com/gif.latex?\dpi{80}\mathrm{VOBST}/100) per simulation.
+`VOBS` | `0` | First simulation's velocity. ![v_ob](http://latex.codecogs.com/gif.latex?v_{ob}=) ![v_ob](http://latex.codecogs.com/gif.latex?%5Cdpi{80}%5Cmathrm{VOBS}/100).
+`VOBE` | `0` | Final simulation's velocity. This is ![v_ob](http://latex.codecogs.com/gif.latex?v_{ob}=) ![v_ob](http://latex.codecogs.com/gif.latex?%5Cdpi{80}\mathrm{VOBE}/100).
+`VOBST` | `1` | Increase ![v_ob](http://latex.codecogs.com/gif.latex?v_{ob}) by ![v_ob](http://latex.codecogs.com/gif.latex?%5Cdpi{80}\mathrm{VOBST}/100) per simulation.
 ***
 ### Harmonically Trapped System
 The dimensionless GPE in a harmonically trapped system is defined as
-![T_GPE](http://latex.codecogs.com/gif.latex?i%5Cfrac%7B%5Cpartial%5Cpsi%7D%7B%5Cpartial%20t%7D=-%5Cfrac%7B1%7D%7B2%7D%5Cnabla%5E2%5Cpsi%2Bg_{2D}%7C%5Cpsi%7C%5E2%5Cpsi%2BV%5Cpsi-\mu_{2D}%5Cpsi),
+![T_GPE](http://latex.codecogs.com/gif.latex?i%5Cfrac%7B%5Cpartial%5Cpsi%7D%7B%5Cpartial%20t%7D=-%5Cfrac%7B1%7D%7B2%7D%5Cnabla%5E2%5Cpsi%2Bg_{2D}%7C%5Cpsi%7C%5E2%5Cpsi%2BV%5Cpsi-\mu_{2D}%5Cpsi),  
 where ![psi](http://latex.codecogs.com/gif.latex?%5Cpsi) is the condensate wavefunction,...
 
 The above version of the GPE is valid when...
