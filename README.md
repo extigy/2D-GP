@@ -24,23 +24,31 @@ To run a simulation with custom parameters
 A full list of editable parameters can be found at the end of this document. Hopefully, most editable parameters can be left as default.
 
 # Gross-Pitaevskii Equation
-2D-GP solves the GPE in 2 distinct and different dimensionless forms: the homogenous system and the harmonic trapped system.  
+2D-GP solves the GPE in 2 different dimensionless forms: the homogeneous system and the harmonically trapped system.  
 
 The homogeneous system is used to fill the entire computational box with fluid, emulating superfluid liquid helium II. The harmonic trapped case is employed to emulate quasi-2d BEC experiments when confined using a harmonic trap.
 
-Both forms of the governing equation are shown below.
-### Homogenoeus System
-The dimensionless homogenous GPE is defined as   
+---
+### Homogeneous System
+The dimensionless homogeneous GPE is defined as
 ![H_GPE](http://latex.codecogs.com/gif.latex?i\frac{\partial%20\psi}{\partial%20t}%20%3D%20-\frac{1}{2}%20\nabla^2\psi%20&plus;%20|\psi|^2\psi%20&plus;%20V\psi%20-\psi + iv_{ob}\frac{\partial%20\psi}{\partial%20x}),  
-where ![psi](http://raw.githubusercontent.com/Extigy/2D-GP/params/images/psi.gif) is the condensate wavefunction, *V* is a potential allowing for obstacles and ![v_ob](http://github.com/Extigy/2D-GP/blob/params/images/v_ob.gif) is the fluid velocity along the x direction.  
+where ![psi](http://latex.codecogs.com/gif.latex?\psi) is the condensate wavefunction, ![V](http://latex.codecogs.com/gif.latex?V) is a potential allowing for obstacles and ![v_ob](http://latex.codecogs.com/gif.latex?v_{ob}) is the fluid velocity along the x direction.  
 
-The above version of the GPE is valid when properties are scaled with the so called `natural units',
+The above version of the GPE is valid when properties are scaled with the so called '**natural units**',  
+![Natural Scaling](http://latex.codecogs.com/gif.latex?%5Cdpi%7B110%7D%20%5C%5C%5Cmathrm%7BDensity%7Eat%7Einfinity%3A%7D%7En_0%20%5C%5C%5Cmathrm%7BLength%3A%7D%7E%5Cxi%20%3D%20%5Cfrac%7B%5Chbar%7D%7B%5Csqrt%7Bm%5Cmu%7D%7D%20%5C%5C%5Cmathrm%7BEnergy%3A%7D%7E%5Cmu%20%3D%20n_0g%20%5C%5C%5Cmathrm%7BVelocity%3A%7D%7Ec%3D%5Cfrac%7B%5Csqrt%7Bn_0g%7D%7D%7Bm%7D%20%5C%5C%5Cmathrm%7BTime%3A%7D%7E%5Cfrac%7B%5Cxi%7D%7Bc%7D)
 
-![Natural Scaling](http://raw.githubusercontent.com/Extigy/2D-GP/params/images/natural_scale.gif)
------
+The following parameters are related to the homogeneous equation.
+
+Parameter | Default Value | Explanation
+--- | --- | ---
+`RHSType` | `0` | GPE Type - Set to `0` for **natural units**, `1` for **harmonic oscillator units**.
+`VOBS` | `0` | First simulation's velocity. ![v_ob](http://latex.codecogs.com/gif.latex?v_{ob}=) ![v_ob](http://latex.codecogs.com/gif.latex?\dpi{80}\mathrm{VOBS}/100).
+`VOBE` | `0` | Final simulation's velocity. This is ![v_ob](http://latex.codecogs.com/gif.latex?v_{ob}=) ![v_ob](http://latex.codecogs.com/gif.latex?\dpi{80}\mathrm{VOBE}/100).
+`VOBST` | `1` | Increase ![v_ob](http://latex.codecogs.com/gif.latex?v_{ob}) by ![v_ob](http://latex.codecogs.com/gif.latex?\dpi{80}\mathrm{VOBST}/100) per simulation.
+***
 ### Harmonically Trapped System
 The dimensionless GPE in a harmonically trapped system is defined as  
 ![T_GPE](http://latex.codecogs.com/gif.latex?i\frac{\partial%20\psi}{\partial%20t}%20%3D%20-\frac{1}{2}%20\nabla^2\psi%20&plus;%20g_{2D}|\psi|^2\psi%20&plus;%20V\psi%20-\mu_{2D}\psi),  
-where ![psi](http://raw.githubusercontent.com/Extigy/2D-GP/params/images/psi.gif) is the condensate wavefunction,...
+where ![psi](http://latex.codecogs.com/gif.latex?\psi) is the condensate wavefunction,...
 
 The above version of the GPE is valid when...
