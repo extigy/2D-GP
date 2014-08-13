@@ -41,7 +41,7 @@ This version of the GPE is valid when properties are scaled with the so called '
 
 The following parameters are related to the homogeneous equation.
 
-Parameter | Default Value | Explanation
+Parameter | Default | Explanation
 --- | --- | ---
 `RHSType` | `0` | GPE Type - Set to `0` for **natural units**, `1` for **harmonic oscillator units**.
 `VOBS` | `0` | First simulation's velocity. ![v_ob](http://latex.codecogs.com/gif.latex?v_{ob}=) ![v_ob](http://latex.codecogs.com/gif.latex?%5Cdpi{80}~%5Cmathrm{VOBS}/100).
@@ -63,7 +63,7 @@ where ![omega_r](http://latex.codecogs.com/gif.latex?%5Comega_r) is the trap fre
 
 The following parameters are related to the harmonically trapped system.
 
-Parameter | Default Value | Explanation
+Parameter | Default | Explanation
 --- | --- | ---
 `RHSType` | `0` | GPE Type - Set to `0` for **natural units**, `1` for **harmonic oscillator units**.
 `harm_osc_C` | `100` | Value of ![g2d](http://latex.codecogs.com/gif.latex?g_{2D})
