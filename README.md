@@ -122,4 +122,20 @@ Parameter | Default | Explanation
 --- | --- | ---
 `enablePot` | `.true.` | Enable the potential term in the GPE globally.
 `enableTrap` | `.true.` | Enable the potential trap.
-`potType` | `-1` | Obstacle type - Set to `-1` for no obstacle, `0` for a fixed Gaussian "laser beam", `1` for a freely rotating Gaussian obstacle, `2` for an oscillating Gaussian obstacle, or `3` for a heightmap potential. 
+`potType` | `-1` | Obstacle type - Set to `-1` for no obstacle, `0` for a fixed Gaussian "laser beam", `1` for a freely rotating Gaussian obstacle, `2` for an oscillating Gaussian obstacle, or `3` for a heightmap potential.
+
+### Potential Trap
+The potential trap is used to confine the fluid, emulating BEC experiments. When enabled a harmonic trapping potential is used and is of the form
+![V_trap][vtrap].
+[vtrap]: http://latex.codecogs.com/gif.latex?V_%7B%5Cmathrm%7Btrap%7D%7D%28x%2Cy%29%3Dm%5Comega_r%5E2%28x%5E2&plus;y%5E2%29/2
+
+### Gaussian Obstacle settings
+For Gaussian Obstacles the following
+
+The following parameters must be set for any of the Gaussian obstacles
+
+Parameter | Default | Explanation
+--- | --- | ---
+`enablePot` | `.true.` | Enable the potential term in the GPE globally.
+`enableTrap` | `.true.` | Enable the potential trap.
+`potType` | `-1` | Obstacle type - Set to `-1` for no obstacle, `0` for a fixed Gaussian "laser beam", `1` for a freely rotating Gaussian obstacle, `2` for an oscillating Gaussian obstacle, or `3` for a heightmap potential.
