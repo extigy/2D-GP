@@ -7,7 +7,7 @@
 
 * Run `./install` to setup. You can also run  `./install <install-dir>` to install to any desired installation location.
 
-* New terminals should now be able to run  `./make2dgp` anywhere.
+* New terminals should now be able to run  `make2dgp` anywhere.
 
 ### Running a Simulation
 * Create a new simulation directory
@@ -112,3 +112,14 @@ Parameter | Default | Explanation
 --- | --- | ---
 `BCX` | `0` | Boundary conditions in the x direction - Set to `0` for **reflective**, `1` for **periodic**.
 `BCY` | `0` | Boundary conditions in the y direction - Set to `0` for **reflective**, `1` for **periodic**.
+
+---
+# Potential Trap and Obstacles
+A harmonic potential trap, obstacles with various properties, and loading of heightmap data is supported.
+The potential must be globally enabled before enabling the trap or obstacle.
+
+Parameter | Default | Explanation
+--- | --- | ---
+`enablePot` | `.true.` | Enable the potential term in the GPE globally.
+`enableTrap` | `.true.` | Enable the potential trap.
+`potType` | `-1` | Obstacle type - Set to `-1` for no obstacle, `0` for a fixed Gaussian "laser beam", `1` for a freely rotating Gaussian obstacle, `2` for an oscillating Gaussian obstacle, or `3` for a heightmap potential. 

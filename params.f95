@@ -32,7 +32,7 @@ module params
   !Potential types - 0 object - 1 free rotational obj - 2 oscillating obj - 3 afm-img
   logical :: enablePot = .true.
   logical :: enableTrap = .true.
-  integer :: potType = 0
+  integer :: potType = -1
   !Enable if you need to constantly recalculate the potential
   integer :: potRep = 0
   logical :: doShin = .false.
