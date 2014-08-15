@@ -143,8 +143,8 @@ The following parameters must be set for any of the Gaussian obstacles
 
 Parameter | Default | Explanation
 --- | --- | ---
-`RRX`|`2.0`| Value for ![rx](http://latex.codecogs.com/gif.latex?r_x)
-`RRY`|`2.0`| Value for ![ry](http://latex.codecogs.com/gif.latex?r_y)
-`OBJXDASH` | `0` | Value for ![x0](http://latex.codecogs.com/gif.latex?x_0)
-`OBJYDASH` | `0` | Value for ![y0](http://latex.codecogs.com/gif.latex?y_0)
-`OBJHEIGHT`| `0` | Value for ![V0](http://latex.codecogs.com/gif.latex?V_0). The default height of  of 0 is equivalent to no obstacle.
+`RRX`|`2.0`| Value for ![rx](http://latex.codecogs.com/gif.latex?r_x), radius in the *x* direction.
+`RRY`|`2.0`| Value for ![ry](http://latex.codecogs.com/gif.latex?r_y), radius in the *y* direction.
+`OBJXDASH` | `0` | Value for ![x0](http://latex.codecogs.com/gif.latex?x_0), the obstacle's *x* position.
+`OBJYDASH` | `0` | Value for ![y0](http://latex.codecogs.com/gif.latex?y_0), the obstacle's *y* position.
+`OBJHEIGHT`| `0` | Value for ![V0](http://latex.codecogs.com/gif.latex?V_0), the barrier height. The default height of  of 0 is equivalent to no obstacle.
