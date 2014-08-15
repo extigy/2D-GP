@@ -134,7 +134,9 @@ The potential trap is used to confine the fluid, emulating BEC experiments. When
 ---
 
 ### Gaussian Obstacles
-When enabled, a Gaussian Obstacle is added to the potential in the form ![V_obs][vobs], where ![rxy](http://latex.codecogs.com/gif.latex?r_x,r_y) are the obstacle radius and ![x0y0](http://latex.codecogs.com/gif.latex?x_0,y_0) are the obstacle position. ![V0](http://latex.codecogs.com/gif.latex?V_0) is a measure of the strength of the gaussian beam, measured in units of ![mu](http://latex.codecogs.com/gif.latex?%5Cmu).
+When enabled, a Gaussian Obstacle is added to the potential in the form  
+ ![V_obs][vobs],  
+where ![rxy](http://latex.codecogs.com/gif.latex?r_x,r_y) are the obstacle radius and ![x0y0](http://latex.codecogs.com/gif.latex?x_0,y_0) are the obstacle position. ![V0](http://latex.codecogs.com/gif.latex?V_0) is a measure of the strength of the gaussian beam, measured in units of ![mu](http://latex.codecogs.com/gif.latex?%5Cmu).
 [vobs]: http://latex.codecogs.com/gif.latex?V_%7B%5Cmathrm%7Bobs%7D%7D%28x%2Cy%29%3DV_0%5Cmathrm%7Bexp%7D%5Cleft%5B%5Cfrac%7B%28x-x_0%29%5E2%7D%7Br_x%5E2%7D&plus;%5Cfrac%7B%28y-y_0%29%5E2%7D%7Br_y%5E2%7D%5Cright%5D
 
 The following parameters must be set for any of the Gaussian obstacles
