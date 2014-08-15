@@ -128,7 +128,7 @@ Density files are output with the filename: `vvvv.dump.ssss`. Here `vvvv` is the
 
 Density files are structured in rows with each row corresponding to a single point in space:
 
-Column 1 |Column 2 |Column 3 |Column 4 |
+Column 1 | Column 2 | Column 3 | Column 4 |
 --- | --- | ---
 *x* coordinate | *y* coordinate |Density at (*x*,*y*)|Fluid velocity at (*x*,*y*)
 
@@ -139,7 +139,7 @@ Wavefunction files are output with the filename: `vvvv.dumpwf.ssss`. Here `vvvv`
 
 Wavefunction files are structured in rows with each row corresponding to a single point in space:
 
-Column 1 |Column 2 |Column 3 |Column 4 |Column 5
+Column 1 | Column 2 | Column 3 | Column 4 | Column 5
 --- | --- | --- | ---
 *x* coordinate | *y* coordinate |Real part of wavefunction at (*x*,*y*)|Imaginary part of wavefunction at (*x*,*y*) | Potential at (*x*,*y*)
 
@@ -150,7 +150,7 @@ The fluid force and energy is calculated by default every 100 time steps. If rot
 The solver will also output a file, named `utils.vvvv` (Here `vvvv` is the current obstacle speed, *v*, multiplied by 100), output at the same frequency.
 This file is in the following format:
 
-Column 1 |Column 2 |Column 3 |Column 4
+Column 1 | Column 2 | Column 3 | Column 4
 --- | --- | ---
 Time, *t* | Total energy of the fluid at *t* | Net force in the *x* direction at *t* | Net force in the *y* direction at *t*
 
