@@ -124,18 +124,25 @@ Parameter | Default | Explanation
 `enableTrap` | `.true.` | Enable the potential trap.
 `potType` | `-1` | Obstacle type - Set to `-1` for no obstacle, `0` for a fixed Gaussian "laser beam", `1` for a freely rotating Gaussian obstacle, `2` for an oscillating Gaussian obstacle, or `3` for a heightmap potential.
 
+---
+
 ### Potential Trap
 The potential trap is used to confine the fluid, emulating BEC experiments. When enabled a harmonic trapping potential is used and is of the form
 ![V_trap][vtrap].
 [vtrap]: http://latex.codecogs.com/gif.latex?V_%7B%5Cmathrm%7Btrap%7D%7D%28x%2Cy%29%3Dm%5Comega_r%5E2%28x%5E2&plus;y%5E2%29/2
 
-### Gaussian Obstacle settings
-For Gaussian Obstacles the following
+---
+
+### Gaussian Obstacles
+When enabled, a Gaussian Obstacle is added to the potential in the form ![V_obs][vobs], where ![rxy](http://latex.codecogs.com/gif.latex?r_x,r_y) are the obstacle radius and ![x0y0](http://latex.codecogs.com/gif.latex?x_0,y_0) are the obstacle position. ![V0](http://latex.codecogs.com/gif.latex?V_0) is a measure of the strength of the gaussian beam, measured in units of ![mu](http://latex.codecogs.com/gif.latex?%5Cmu).
+[vobs]: http://latex.codecogs.com/gif.latex?V_%7B%5Cmathrm%7Bobs%7D%7D%28x%2Cy%29%3DV_0%5Cmathrm%7Bexp%7D%5Cleft%5B%5Cfrac%7B%28x-x_0%29%5E2%7D%7Br_x%5E2%7D&plus;%5Cfrac%7B%28y-y_0%29%5E2%7D%7Br_y%5E2%7D%5Cright%5D
 
 The following parameters must be set for any of the Gaussian obstacles
 
 Parameter | Default | Explanation
 --- | --- | ---
-`enablePot` | `.true.` | Enable the potential term in the GPE globally.
-`enableTrap` | `.true.` | Enable the potential trap.
-`potType` | `-1` | Obstacle type - Set to `-1` for no obstacle, `0` for a fixed Gaussian "laser beam", `1` for a freely rotating Gaussian obstacle, `2` for an oscillating Gaussian obstacle, or `3` for a heightmap potential.
+`RRX`|`2.0`| Value for ![rx](http://latex.codecogs.com/gif.latex?r_x)
+`RRY`|`2.0`| Value for ![ry](http://latex.codecogs.com/gif.latex?r_y)
+`OBJXDASH` | `0` | Value for ![x0](http://latex.codecogs.com/gif.latex?x_0)
+`OBJYDASH` | `0` | Value for ![y0](http://latex.codecogs.com/gif.latex?y_0)
+`OBJHEIGHT`| `0` | Value for ![V0](http://latex.codecogs.com/gif.latex?V_0). The default height of  of 0 is equivalent to no obstacle.
