@@ -251,8 +251,8 @@ An example (and default) `params.in` is provided by 2D-GP, and looks like this:
 !
 NX = 128
 NY = 128
-GAMMAC = 0.5d0
-rtNorm = .true.
+BCX = 1
+BCY = 1
 ```
 
 This should show you enough to work out how to use the parameters shown throught this document.
