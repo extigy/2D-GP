@@ -241,3 +241,18 @@ Parameter | Default | Explanation
 `afmXScale`|`0.035`| Scale the data in the *x* direction by this value
 `afmYscale`|`1`| Scale the data in the *y* direction by this value
 `TRUNCPARAM` | `1`| Truncate the data at this amount (in units of the maximum point)
+
+#Example `params.in`
+
+An example (and default) `params.in` is provided by 2D-GP, and looks like this:
+```
+!Enter custom parameters in the form
+!PARAMETER_NAME = VALUE
+!
+NX = 128
+NY = 128
+GAMMAC = 0.5d0
+rtNorm = .true.
+```
+
+This should show you enough to work out how to use the parameters shown throught this document.
