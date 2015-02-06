@@ -8,6 +8,11 @@ if [ -a params.in ]; then
 else
 	cp $GP2DSOURCELOC/params.in.dist $GP2DSOURCELOC/params.in
 fi
+if [ -a ic.in ]; then
+	cp ic.in $GP2DSOURCELOC
+else
+	cp $GP2DSOURCELOC/ic.in.dist $GP2DSOURCELOC/ic.in
+fi
 #Change to code dir
 origdir=${PWD}
 pushd $GP2DSOURCELOC
@@ -17,7 +22,7 @@ make
 #if [ $? == 0 ]; then
 mv gp $origdir
 mv *.mod $origdir
-cp makemovie.sh params.in $origdir
+cp makemovie.sh params.in ic.in $origdir
 cp -r ./scripts $origdir/
 #fi
 make clean

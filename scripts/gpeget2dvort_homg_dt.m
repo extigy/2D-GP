@@ -5,7 +5,7 @@ neg = [];
 for i=startno:stride:endno
     [gridx,gridy,dens,phase,potential] = gpeget2dWF(dirarg,i,speed,nx,ny);
     fprintf('read %d\n',i);
-    j = i/stride;
+    j = (i+(stride-startno))/stride;
     [xlocs,ylocs,pol] = gpeget2dvort_homg(dens,phase,gridx,gridy,potential);
     total(j) = length(pol);
     neg(j) = -sum(pol-1)/2;

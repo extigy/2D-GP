@@ -166,23 +166,6 @@ subroutine calc_new_obj_angle
 	OBJANGLE  = OBJANGLE  + (OBJANGLEV*DT)
 end subroutine
 
-subroutine calc_OBJNEWTON
-	use params
-	implicit none
-	double precision :: beta = 2.5d0, forced, mass
-	double precision, dimension(2,-NX/2:NX/2,-NY/2:NY/2) :: force2d
-
-	call calc_force_2D(force2d)
-	mass = beta/(w0**2.0d0)
-
-	forced = FVAL*SIN(DBLE(TIME)*WF)
-	OBJXVEL = OBJXVEL + ((sum(force2d(1,:,:))*DSPACE*DSPACE&
-						-beta*OBJXDASH + forced)/mass)*DBLE(DT)
-	OBJXDASH = OBJXDASH + OBJXVEL*DBLE(DT)
-	CALL calc_OBJPOT_osc
-end subroutine
-
-
 subroutine calc_energy(energy)
 	use params
 	implicit none
@@ -215,9 +198,31 @@ subroutine calc_phase(phase)
 	implicit none
 	integer :: i,j
 	double precision, dimension(-NX/2:NX/2,-NY/2:NY/2) :: phase
-	forall(i = -NX/2:NX/2, j = -NY/2:NY/2)
-		phase(i,j) = atan(aimag(GRID(i,j))/dble(GRID(i,j)+tiny(0.0d0)))
-	end forall
+	do i = -NX/2,NX/2
+		do j = -NY/2,NY/2
+				phase(i,j) = atan2(imagpart(GRID(i,j)),realpart(GRID(i,j)))
+		end do
+	end do
+end subroutine
+
+subroutine insert_vortex(xloc,yloc,circ)
+	use params
+	implicit none
+	integer :: i,j,k
+	double precision :: xloc,yloc,rs,xx,yy,circ
+	double precision, dimension(-NX/2:NX/2,-NY/2:NY/2) :: R
+	complex*16, dimension(-NX/2:NX/2,-NY/2:NY/2) :: phse
+
+	do i = -NX/2, NX/2
+		do j = -NY/2, NY/2
+			xx = (i*DSPACE)
+			yy = (j*DSPACE)
+			rs=(xx-xloc)**2.0d0 + (yy-yloc)**2.0d0;
+			phse(i,j) = exp(circ*EYE*(atan2(yy-yloc,xx-xloc)))
+			R(i,j) = sqrt(rs*(0.3437+0.0286*rs)/(1+0.3333*rs+0.0286*rs*rs)); 
+		end do
+	end do
+	GRID = GRID*R*phse;
 end subroutine
 
 subroutine velxy(phase,velx,vely)
@@ -230,27 +235,265 @@ subroutine velxy(phase,velx,vely)
 	vely = 0.0d0
 	do i = -NX/2+1,NX/2-1
 	do j = -NY/2+1,NY/2-1
-		if (phase(i+1,j)-phase(i-1,j)<-(pi/2.0d0)) then
-			temp1 = phase(i+1,j)-(phase(i-1,j) - PI)
-		else if (phase(i+1,j)-phase(i-1,j)>(pi/2.0d0)) then
-			temp1 = phase(i+1,j)-(phase(i-1,j) + PI)
-		else
-			temp1 = phase(i+1,j)-phase(i-1,j)
-		end if
-		velx(i,j) = temp1
+		velx(i,j) = phase(i+1,j)-phase(i-1,j)
+		do while (velx(i,j) > PI)
+			velx(i,j) = velx(i,j) - 2.0d0*PI
+		end do
+		do while (velx(i,j) < -PI)
+			velx(i,j) = velx(i,j) + 2.0d0*PI
+		end do
 	end do
 	end do
 
 	do i = -NX/2+1,NX/2-1
 	do j = -NY/2+1,NY/2-1
-		if (phase(i,j+1)-phase(i,j-1)<-(pi/2.0d0)) then
-			temp1 = phase(i,j+1)-(phase(i,j-1) - PI)
-		else if (phase(i,j+1)-phase(i,j-1)>(pi/2.0d0)) then
-			temp1 = phase(i,j+1)-(phase(i,j-1) + PI)
-		else
-			temp1 = phase(i,j+1)-phase(i,j-1)
+		vely(i,j) = phase(i,j+1)-phase(i,j-1)
+		do while (vely(i,j) > PI)
+			vely(i,j) = vely(i,j) - 2.0d0*PI
+		end do
+		do while (vely(i,j) < -PI)
+			vely(i,j) = vely(i,j) + 2.0d0*PI
+		end do
+	end do
+	end do
+end subroutine
+
+subroutine lineintvf(fieldx,fieldy,x,ex,y,ey,ret)
+	use params
+	IMPLICIT NONE
+	INTEGER :: t,x,ex,y,ey
+	DOUBLE PRECISION, DIMENSION(-NX/2:NX/2,-NY/2:NY/2) :: fieldx,fieldy
+	DOUBLE PRECISION l1,l2,l3,l4,ret
+	l1=0.0d0
+	l2=0.0d0
+	l3=0.0d0
+	l4=0.0d0
+	do t = y,ey
+		l1 = l1 + DSPACE*fieldy(x,t)
+	end do
+	do t = x,ex
+		l2 = l2 + DSPACE*fieldx(t,y)
+	end do
+	do t = y,ey
+		l3 = l3 + DSPACE*fieldy(ex,t)
+	end do
+	do t = x,ex
+		l4 = l4 + DSPACE*fieldx(t,ey)
+	end do
+	ret = l2+l3-l4-l1
+end subroutine
+
+subroutine box_blur(field,x,y,ret)
+	use params
+	implicit none
+	integer :: i,j,x,y
+	double precision, DIMENSION(-NX/2:NX/2,-NY/2:NY/2) :: field
+	double precision :: ret
+	ret = 0.0d0
+	do i = x-1,x+1
+		do j = y-1,y+1
+			ret = ret + field(i,j)
+		end do
+	end do
+	ret = ret/9.0d0
+end subroutine
+
+
+subroutine calc_vortex_field(velx, vely, prevort)
+	use params
+	implicit none
+	integer :: i,j,n
+	double precision, dimension(-NX/2:NX/2,-NY/2:NY/2) :: tempfield,prevort,velx,vely
+	prevort = 0.0d0
+	do i = -NX/2+3,NX/2-3
+		do j = -NY/2+3,NY/2-3
+				call lineintvf(velx,vely,i-3,i+3,j-3,j+3,prevort(i,j))
+				if(DBLE(OBJPOT(i,j))>5.0d0) then
+		        	prevort(i,j) = 0.0d0;
+		        end if
+		end do
+	end do
+	do n = 1,3
+		tempfield = prevort
+		do i = -NX/2+1,NX/2-1
+			do j = -NY/2+1,NY/2-1
+				call box_blur(tempfield,i,j,prevort(i,j))
+			end do
+		end do
+	end do
+end subroutine
+
+subroutine pos_neg_binary(field, threshold, posfield, negfield)
+	use params
+	implicit none
+	integer :: i,j
+	double precision, dimension(-NX/2:NX/2,-NY/2:NY/2) :: field
+	double precision :: threshold
+	integer, dimension(-NX/2:NX/2,-NY/2:NY/2) :: posfield, negfield
+
+	posfield = 0;
+	negfield = 0;
+	do i = -NX/2,NX/2
+		do j = -NY/2,NY/2
+			if(field(i,j) > threshold) then
+				posfield(i,j) = 1
+			end if
+			if(field(i,j) < -threshold) then
+				negfield(i,j) = 1
+			end if
+		end do
+	end do
+end subroutine
+
+subroutine bw_label(bwfield,labels)
+	use params
+	implicit none
+	integer, dimension(-NX/2:NX/2,-NY/2:NY/2) :: bwfield,labels
+	integer, dimension(4) :: check
+	integer, dimension(NX*NY,4) :: linked
+	integer :: i,j,ii,jj,rc,lc,m
+	
+	labels = -1
+	linked = -1
+	lc = 1
+	rc = 0
+
+	do j = -NY/2+1,NY/2-1
+	do i = -NX/2+1,NX/2-1
+		if (bwfield(i,j) .ne. 1) cycle
+		check(1) = labels(i+1,j-1)
+		check(2) = labels(i,j-1)
+		check(3) = labels(i-1,j-1)
+		check(4) = labels(i-1,j)
+
+		if(check(1) >= 0) then 
+			labels(i,j) = check(1)
+			linked(lc,1) = check(1)
 		end if
-		vely(i,j) = temp1
+		if(check(2) >= 0) then
+			labels(i,j) = check(2)
+			linked(lc,2) = check(2)
+		end if
+		if(check(3) >= 0) then
+			labels(i,j) = check(3)
+			linked(lc,3) = check(3)
+		end if
+		if(check(4) >= 0) then
+			labels(i,j) = check(4)
+			linked(lc,4) = check(4)
+		end if
+
+		if(labels(i,j) >= 0) then
+			lc = lc + 1
+		else
+			labels(i,j) = rc
+			rc = rc + 1
+		end if
 	end do
 	end do
+
+
+	do jj = 1,NX*NY
+	if(maxval(linked(jj,:)) .eq. -1) cycle
+	m = minval(linked(jj,:),linked(jj,:) >= 0)
+	do ii = 1,4
+		if(linked(jj,ii) .ne. m .and. linked(jj,ii) >= 0 ) then
+			do j = -NY/2,NY/2
+			do i = -NX/2,NX/2
+				if (labels(i,j) .eq. linked(jj,ii)) then
+					labels(i,j) = m
+				end if
+			end do
+			end do
+		end if
+	end do
+	end do	
+end subroutine
+
+subroutine set_homg_sq(i,j,sizexy)
+	use params
+	implicit none
+	integer :: ii,jj,i,j,sizexy
+	double precision, dimension(-NX/2:NX/2,-NY/2:NY/2) :: phase
+	complex*16, dimension(-NX/2:NX/2,-NY/2:NY/2) :: phse
+	
+	call calc_phase(phase)
+
+	do ii = i-sizexy,i+sizexy
+		do jj = j-sizexy, j+sizexy
+			GRID(ii,jj) = 1.0d0*exp(EYE*phase(ii,jj));
+		end do
+	end do
+end subroutine
+
+
+subroutine kill_vortex_far()
+	use params
+	implicit none
+	double precision, dimension(0:NX*NY,0:1) :: vortarray
+	double precision, dimension(-NX/2:NX/2,-NY/2:NY/2) :: phase,velx,vely,vortfield
+	integer, dimension(-NX/2:NX/2,-NY/2:NY/2) :: posfield, negfield,poslabels,neglabels
+	integer :: i,j,n,m,maxlabel, circ
+	double precision :: xloc, yloc
+
+	if(doVortexKilling .eqv. .false.) return
+
+	call calc_phase(phase)
+	call velxy(phase,velx,vely)
+	call calc_vortex_field(velx, vely, vortfield)
+	call pos_neg_binary(vortfield, 0.5d0, posfield, negfield)
+	call bw_label(posfield,poslabels)
+	call bw_label(negfield,neglabels)
+
+	maxlabel = maxval(poslabels)
+	do n = 0, maxlabel
+		xloc = 0.0d0
+		yloc = 0.0d0
+		m = 0
+		do j = -NY/2,NY/2
+		do i = -NX/2,NX/2
+			if (poslabels(i,j) .eq. n) then
+				xloc = xloc + (i*DSPACE)
+				yloc = yloc + (j*DSPACE)
+				m = m + 1
+			end if
+		end do
+		end do
+
+		xloc = xloc/DBLE(m)
+		yloc = yloc/DBLE(m)
+
+		if((vortexKillX .and. abs(xloc) > vortexKillXDist) .or.&
+		   (vortexKillY .and. abs(yloc) > vortexKillYDist)) then
+			write(6,*) "Killing positive vortex at: ", xloc, ", ", yloc
+			call insert_vortex(xloc,yloc,-1.0d0)
+			call set_homg_sq(nint(xloc/DSPACE),nint(yloc/DSPACE),8)
+		end if
+	end do
+
+	maxlabel = maxval(neglabels)
+	do n = 0, maxlabel
+		xloc = 0.0d0
+		yloc = 0.0d0
+		m = 0
+		do j = -NY/2,NY/2
+		do i = -NX/2,NX/2
+			if (neglabels(i,j) .eq. n) then
+				xloc = xloc + (i*DSPACE)
+				yloc = yloc + (j*DSPACE)
+				m = m + 1
+			end if
+		end do
+		end do
+
+		xloc = xloc/DBLE(m)
+		yloc = yloc/DBLE(m)
+		if((vortexKillX .and. abs(xloc) > vortexKillXDist) .or.&
+		   (vortexKillY .and. abs(yloc) > vortexKillYDist)) then
+			write(6,*) "Killing negative vortex at: ", xloc, ", ", yloc
+			call insert_vortex(xloc,yloc,1.0d0)
+			call set_homg_sq(nint(xloc/DSPACE),nint(yloc/DSPACE),8)
+		end if
+	end do
+
 end subroutine

@@ -3,6 +3,7 @@ module params
   !Iterations to run
   integer :: NSTEPS=10000
   integer :: ISTEPS=2000
+  integer :: VSTEPS=2000
 
   !Resolution
   integer :: NX = 512
@@ -49,7 +50,7 @@ module params
   double precision :: OBJANGLEV=0.1d0
   double precision :: MOMINERTIA=0.000001d0
   !Oscillating Obj
-  double precision :: FVAL = 0.0d0, WF = 0.0d0,W0 = 0.05d0 !force amp,force feq, nat freq
+  double precision :: OBJAMP = 0.0d0, OBJW = 0.05d0 !amp, freq
   !Trap
   double precision :: TXDASH=0.0d0
   double precision :: TYDASH=0.0d0
@@ -68,6 +69,23 @@ module params
 
   !pot-image
   character(2048) :: pot_filename
+
+  !Vortex Killer
+  logical :: doVortexKilling = .false.
+  logical :: vortexKillX = .true.
+  logical :: vortexKillY = .false.
+  double precision :: vortexKillXDist = 40.0d0
+  double precision :: vortexKillYDist = 0.0d0
+  integer :: vortexKillFreq = 100
+
+  !Damping radius
+  logical :: dampedX = .false.
+  logical :: dampedY = .false.
+  double precision :: dampedXDist = 10.0d0
+  double precision :: dampedYDist = 0.0d0
+  double precision :: dampedgamma = 0.001d0
+
+
 
 
   !GLOBALS----------------------------------------------------------------------

@@ -22,6 +22,9 @@ subroutine calc_OBJPOT
 			if(potType .eq. 4) then
 				call calc_OBJPOT_img
 			end if
+			if(potType .eq. 5) then
+				call calc_OBJPOT_bump_dt
+			end if
 		end if
 		if (enableTrap) then
 			do i = -NX/2,NX/2
@@ -129,6 +132,23 @@ subroutine calc_OBJPOT_shin
 
 end subroutine
 
+subroutine calc_OBJPOT_bump_dt
+	use params
+	implicit none
+	integer :: i,j,obj
+	double precision :: rx,ry,r2
+
+	if(TIME .gt. 100.and. TIME .lt. 101) then
+		do i = -NX/2,NX/2
+			do j = -NY/2,NY/2
+				rx = (dble(i)*DSPACE)-OBJXDASH
+				OBJPOT(i,j) = OBJHEIGHT*EXP(-(1.0d0/RRX**2.0d0)*(rx**2.0d0))
+			end do
+		end do
+	end if
+
+end subroutine
+
 subroutine calc_OBJPOT_obj
 	use params
 	implicit none
@@ -152,7 +172,7 @@ subroutine calc_OBJPOT_osc
 	double precision :: rx,ry,r2
 	do i = -NX/2,NX/2
 		do j = -NY/2,NY/2
-			rx = (dble(i)*DSPACE)-OBJXDASH
+			rx = (dble(i)*DSPACE)-OBJXDASH-(OBJAMP*sin(OBJW*TIME))
 			ry = (dble(j)*DSPACE)-OBJYDASH
 			OBJPOT(i,j) = OBJHEIGHT*&
 				EXP(-(1.0d0/RRX**2.0d0)*(rx**2.0d0) - (1.0d0/RRY**2.0d0)*(ry**2.0d0))

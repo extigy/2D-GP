@@ -1,4 +1,4 @@
-function [xlocs,ylocs,pol] = gpeget2dvort(dens,phase,gridx,gridy,potential)
+function [xlocs,ylocs,pol] = gpeget2dvort(dens,ophase,gridx,gridy,potential)
 xlocs=[];
 ylocs=[];
 pol=[];
@@ -13,6 +13,7 @@ vely(dims(1),dims(2)) = 0;
 presort(dims(1),dims(2)) = 0;
 postsort(dims(1),dims(2)) = 0;
 
+phase = unwrap(ophase);
 for i = 2:dims(1)-1
 for j = 2:dims(2)-1
 	if (phase(i+1,j)-phase(i-1,j)<-(pi/2.0d0))
@@ -25,7 +26,8 @@ for j = 2:dims(2)-1
 		velx(i,j) = real(temp1)/dspace;
 end
 end
-	
+
+phase = unwrap(ophase,[],2);
 for i = 2:dims(1)-1
 for j = 2:dims(2)-1
 	if (phase(i,j+1)-phase(i,j-1)<-(pi/2.0d0))
@@ -51,32 +53,13 @@ end
 end
 
 
-%for i = 6:3:dims(1)-6
-%for j = 6:3:dims(2)-6
-%        if(sqrt((gridx(j)-comx).^2+(gridy(i)-comy).^2)<TFradius)
-%            presort(i,j)=LINEINTVF(velx,vely,i,i+3,j,j+3);
-%            if(sqrt((gridx(j)-comx).^2+(gridy(i)-comy).^2)<TFradius/1.2 && potential(i,j)>30)
-%                presort(i,j) = 0;
-%            end
-%        end
-%end
-%end
-
-%densblob=dens>0.002;
-  
-    
-%phase(dens<0.0005)=0;
-%imagesc(sqrt(velx.*velx+vely.*vely))
-%imagesc(gridx,gridy,dens)
-%imagesc(dens)
-%imagesc(potential)
 
 h = fspecial('gaussian', size(presort), 0.5);
 presort = imfilter(presort, h);
 %imagesc(presort);
 
-negareas = bwlabel(presort>0.50);
-posareas = bwlabel(presort<-0.50);
+negareas = bwlabel(presort>0.5);
+posareas = bwlabel(presort<-0.5);
 
 for i = 1:max(max(posareas))
     [r,c] = find(posareas== i);
@@ -96,8 +79,6 @@ for i = 1:max(max(negareas))
     end
 end
 
-xlocs = xlocs - comx;
-ylocs = ylocs - comy;
 
 function ret = LINEINTVF(fieldx,fieldy,x,ex,y,ey)
 	l1=0.0d0;

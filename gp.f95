@@ -17,6 +17,8 @@ program gp
 		open (8, FILE = fname)
 		!!!!!!!!!!!!
 		call runit(ISTEPS,0,0)
+		include 'ic.in'
+		call runit(VSTEPS,0,0)
 		DT = DTSIZE
 		call add_noise
 		call runit(NSTEPS,1,1)
@@ -59,6 +61,15 @@ subroutine runit(steps,rt,plot)
 				end if
 			end if
 		end if
+
+		if (modulo(i,vortexKillFreq) == 0) then
+			if (rt == 1) then
+				if (plot == 1) then
+					call kill_vortex_far()
+				end if
+			end if
+		end if
+
 		if (modulo(i,dumpwf) == 0) then
 			if (rt == 1) then
 				if (plot == 1) then
@@ -79,16 +90,12 @@ subroutine dump_density (II)
 	implicit none
 	integer :: II,i,j
 	character(len=80) fname
-	double precision, dimension(-NX/2:NX/2,-NY/2:NY/2) :: phase,velx,vely
-	call calc_phase(phase)
-	call velxy(phase,velx,vely)
 	write(fname, '(i0.4,a,i0.4)') LOOPNO,'.dump.',II/dumpd
 	open (7, FILE = fname)
 	do i = -NX/2, NX/2
 		do j = -NY/2, NY/2
-			write (unit=7,fmt="(f10.2,f10.2,2F20.16)")&
-				dble(i*DSPACE),dble(j*DSPACE),dble(GRID(i,j)*CONJG(GRID(i,j))),&
-				SQRT((velx(i,j)**2.0d0)+(vely(i,j)**2.0d0))
+			write (unit=7,fmt="(2f10.2, f20.16)")&
+				dble(i*DSPACE),dble(j*DSPACE),dble(GRID(i,j)*CONJG(GRID(i,j)))
 		end do
 		write (unit=7,fmt="(a)") " "
 	end do
@@ -112,3 +119,43 @@ subroutine dump_wavefunction (II)
 	end do
 	close(7)
 end subroutine
+
+subroutine dump_phase (II)
+	use params
+	implicit none
+	integer :: II,i,j
+	character(len=80) fname
+	double precision, dimension(-NX/2:NX/2,-NY/2:NY/2) :: phase
+	write(fname, '(i0.4,a,i0.4)') LOOPNO,'.phase.',II/dumpd
+	call calc_phase(phase)
+	open (7, FILE = fname)
+	do i = -NX/2, NX/2
+		do j = -NY/2, NY/2
+			write (unit=7,fmt="(2f10.2, f20.16)")&
+				dble(i*DSPACE),dble(j*DSPACE),dble(phase(i,j))
+		end do
+		write (unit=7,fmt="(a)") " "
+	end do
+	close(7)
+end subroutine
+
+subroutine dump_velocity (II)
+	use params
+	implicit none
+	integer :: II,i,j
+	character(len=80) fname
+	double precision, dimension(-NX/2:NX/2,-NY/2:NY/2) :: phase,velx,vely
+	write(fname, '(i0.4,a,i0.4)') LOOPNO,'.velocity.',II/dumpd
+	call calc_phase(phase)
+	call velxy(phase,velx,vely)
+	open (7, FILE = fname)
+	do i = -NX/2, NX/2
+		do j = -NY/2, NY/2
+			write (unit=7,fmt="(2f10.2, 2f20.16)")&
+				dble(i*DSPACE),dble(j*DSPACE),velx(i,j),vely(i,j)
+		end do
+		write (unit=7,fmt="(a)") " "
+	end do
+	close(7)
+end subroutine
+
