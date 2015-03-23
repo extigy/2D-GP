@@ -40,8 +40,8 @@ end
 
 for i = 6:1:dims(1)-6
 for j = 6:1:dims(2)-6
-        presort(i,j)=LINEINTVF(velx,vely,i,i+5,j,j+5);
-        if(potential(i,j)>40)
+        presort(i,j)=LINEINTVF(velx,vely,i-3,i+3,j-3,j+3);
+        if(potential(i,j)>0.5)
             presort(i,j) = 0;
         end
 end
@@ -55,9 +55,9 @@ end
 %imagesc(gridx,gridy,dens)
 %imagesc(dens)
 %imagesc(presort);
-h = fspecial('gaussian', size(presort), 0.5);
+h = fspecial('gaussian', size(presort), 0.2);
 presort = imfilter(presort, h);
-%imagesc(presort>2);
+%imagesc(presort);
 
 negareas = bwlabel(presort>2);
 posareas = bwlabel(presort<-2);

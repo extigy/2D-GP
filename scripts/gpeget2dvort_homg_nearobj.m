@@ -1,11 +1,7 @@
-function [xlocs,ylocs,pol] = gpeget2dvort(dens,ophase,gridx,gridy,potential)
+function [xlocs,ylocs,pol] = gpeget2dvort_homg(dens,ophase,gridx,gridy,potential)
 xlocs=[];
 ylocs=[];
 pol=[];
-TFradius = 11;
-TFpot = (TFradius*TFradius)/2;
-[comx,comy] = gpegetcenterofmass(dens,gridx,gridy);
-
 dims = size(dens);
 dspace=(gridx(2)-gridx(1));
 velx(dims(1),dims(2)) = 0;
@@ -23,11 +19,12 @@ for j = 2:dims(2)-1
 	else
 		temp1 = phase(i+1,j)-phase(i-1,j);
     end
-		velx(i,j) = real(temp1)/dspace;
+	velx(i,j) = real(temp1)/dspace;
 end
 end
 
 phase = unwrap(ophase,[],2);
+
 for i = 2:dims(1)-1
 for j = 2:dims(2)-1
 	if (phase(i,j+1)-phase(i,j-1)<-(pi/2.0d0))
@@ -43,22 +40,30 @@ end
 
 for i = 6:1:dims(1)-6
 for j = 6:1:dims(2)-6
-        if(sqrt((gridx(j)-comx).^2+(gridy(i)-comy).^2)<TFradius)
-            presort(i,j)=LINEINTVF(velx,vely,i-3,i+3,j-3,j+3);
-            if(sqrt(gridx(j).^2+gridy(i).^2)<5 && potential(i,j)>40)
-                presort(i,j) = 0;
-            end
+        presort(i,j)=LINEINTVF(velx,vely,i-3,i+3,j-3,j+3);
+        %if(potential(i,j) > 0.5 || potential(i,j)<0.0000005) % for radus of 12
+        if(potential(i,j) > 0.5 || potential(i,j)<0.0005) %for radius of 8
+        %if(potential(i,j) > 0.5 || potential(i,j)<0.03) % for radus of 6
+            presort(i,j) = 0;
         end
 end
 end
 
-
-h = fspecial('gaussian', size(presort), 0.5);
+%densblob=dens>0.002;
+  
+    
+%phase(dens<0.0005)=0;
+%imagesc(sqrt(velx.*velx+vely.*vely))
+%imagesc(gridx,gridy,dens)
+%imagesc(dens)
+%imagesc(presort);
+h = fspecial('gaussian', size(presort), 0.2);
 presort = imfilter(presort, h);
 %imagesc(presort);
 
 negareas = bwlabel(presort>2);
 posareas = bwlabel(presort<-2);
+
 
 for i = 1:max(max(posareas))
     [r,c] = find(posareas== i);
@@ -77,7 +82,6 @@ for i = 1:max(max(negareas))
         pol = [pol,-1];
     end
 end
-
 
 function ret = LINEINTVF(fieldx,fieldy,x,ex,y,ey)
 	l1=0.0d0;
