@@ -34,9 +34,9 @@ function [FX, FY] = gpeget2dforce(dens,phase,gridx,gridy,potential)
     for k=1:2,
         rhoDv(k,:,:) = dens.*squeeze(DPot(k,:,:));
     end 
-    %imagesc(gridx,gridy,squeeze(rhoDv(2,:,:)));
+    %imagesc(gridx,gridy,squeeze(DsumT(1,:,:))+squeeze(rhoDv(1,:,:)));
     
-    FX = -dx*dx*trapz(trapz(squeeze(DsumT(1,:,:)).*(potential>0.5)))-dx*dx*trapz(trapz(squeeze(rhoDv(1,:,:)).*(potential>0.5)));
-    FY = -dx*dx*trapz(trapz(squeeze(DsumT(2,:,:)).*(potential>0.5)))-dx*dx*trapz(trapz(squeeze(rhoDv(2,:,:)).*(potential>0.5)));
+    FX = -dx*dx*trapz(trapz(squeeze(DsumT(1,:,:))))-dx*dx*trapz(trapz(squeeze(rhoDv(1,:,:))));
+    FY = -dx*dx*trapz(trapz(squeeze(DsumT(2,:,:))))-dx*dx*trapz(trapz(squeeze(rhoDv(2,:,:))));
     
 end
