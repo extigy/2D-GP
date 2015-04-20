@@ -1,4 +1,4 @@
-function [xlocs,ylocs,pol] = gpeget2dvort_ndg(filename,nx,ny,ir,or)
+function [xlocs,ylocs,pol] = gpeget2dvort_ndg(filename,nx,ny)
 dirarg = regexprep(filename, '/$', '');
 denslocation = strcat(dirarg, '/density.dat');
 phaselocation = strcat(dirarg, '/phase.dat');
@@ -11,7 +11,7 @@ ophase = reshape(ophase(:,3),nx+1,ny+1);
 dens = reshape(density(:,3),nx+1,ny+1);
 
 disp(['Grid spacing is ',num2str(gridx(2)-gridx(1)),'.']);
-gf = 0.75; %Gaussian filter width. Should really be about the size of a vortex core
+gf = 2; %Gaussian filter width. Should really be about the size of a vortex core in your units
 
 disp(['Using gaussian filter of width ',num2str(gf),'.']);
 li = 6; %Line integral size. Should be around the number of grid points in a vortex core
@@ -61,11 +61,7 @@ end
 
 for i = li:1:dims(1)-li
 for j = li:1:dims(2)-li
-        if(sqrt(gridx(i)^2+gridy(j)^2)<or && sqrt(gridx(i)^2+gridy(j)^2)>ir)
-            presort(i,j)=LINEINTVF(velx,vely,i-li/2,i+li/2,j-li/2,j+li/2);
-        else
-            presort(i,j) = 0;
-        end
+      presort(i,j)=LINEINTVF(velx,vely,i-li/2,i+li/2,j-li/2,j+li/2);
 end
 end
 
