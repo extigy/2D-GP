@@ -35,7 +35,7 @@ subroutine runit(steps,rt,plot)
 			call dump_wavefunction(0) !dump initial condition
 		end if
 	end if
-	do i = 1, steps
+	do i = STARTI, steps
 		call iterate(rt)
 		TIME = TIME + dble(DT)
 		if (modulo(i,dumputil) == 0) then

@@ -12,6 +12,31 @@ subroutine add_noise
 	end do
 end subroutine
 
+subroutine load_all(t)
+	use params
+	implicit none
+	integer :: i,j,t
+	double precision :: x, y, real, imag, pot
+	character(2048) :: tmp,fname
+	fname = './xxxx.dumpwf.xxxx'
+	WRITE (fname(3:6), '(I4)') LOOPNO
+	WRITE (fname(15:18), '(I4)') t
+	open (999, FILE = fname)
+	do i = -NX/2, NX/2
+		do j = -NY/2, NY/2
+			read (999,"(f10.2,f10.2,3F20.10)") x, y, real, imag, pot
+			GRID(i,j) = real + EYE*imag
+			OBJPOT(i,j) = pot
+		end do
+		read (999,"(a)") tmp
+	end do
+	close(999)
+	TIME = t*dumpwf*DTSIZE
+	STARTI = t*dumpwf + 1
+	write (8, *) 'Loading file:',fname,' with time: ',TIME, ' and frame: ', STARTI
+	call calc_OBJPOT
+end subroutine
+
 
 !Approx - homogeneous!
 subroutine approx
