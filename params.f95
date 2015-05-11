@@ -90,7 +90,7 @@ module params
 
   !GLOBALS----------------------------------------------------------------------
   double precision :: VOB
-  integer :: LOOPNO=5,STARTI=1
+  integer :: LOOPNO=5,STARTI=1,BMPLOADED = 0
   double precision,parameter :: PI = 4.0d0*ATAN(1.0d0)
   complex*16 :: DT,EYE = (0.0d0,1.0d0)
   double precision :: NORM,OLDNORM = 1.0d0
