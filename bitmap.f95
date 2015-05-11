@@ -23,7 +23,10 @@ Contains
     character :: read_char
     integer(4) :: read_short
     integer(8) :: read_long
-
+	if (BMPLOADED .eq. 1 ) then
+		return
+	end if
+	
     !write(6,*) "Reading: ",pot_filename
 	OPEN(UNIT=11, FILE=pot_filename, STATUS="OLD", ACCESS="STREAM")
 
@@ -64,7 +67,7 @@ Contains
 
 
     CLOSE(UNIT=11)
-
+	BMPLOADED = 1
     !write(6,"(5i4)") Img
   End Subroutine 
 

@@ -33,7 +33,7 @@ subroutine load_all(t)
 	close(999)
 	TIME = t*dumpwf*DTSIZE
 	STARTI = t*dumpwf + 1
-	write (8, *) 'Loading file:',fname,' with time: ',TIME, ' and frame: ', STARTI
+	write (8, *) 'Loading file:',fname(1:18),' with time: ',TIME, ' and frame: ', STARTI
 	call calc_OBJPOT
 end subroutine
 
