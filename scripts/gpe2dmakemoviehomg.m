@@ -7,7 +7,7 @@ function gpe2dmakemoviehomg(dirarg,startno,stride,endno,speed,nx,ny)
         [xlocs,ylocs,pol] = gpeget2dvort_homg(dens,phase,gridx,gridy,potential);
         fprintf('read %d\n',i);
         j = i/stride -startno/stride;
-        h=figure('visible','off');
+        h=figure('visible','off','renderer','painters');
         imagesc(gridx(1:nx+1),gridy(1:ny+1),dens);
         colormap(gray);
         %x=linspace(0,1,128);

@@ -19,8 +19,8 @@ subroutine load_all(t)
 	double precision :: x, y, real, imag, pot
 	character(2048) :: tmp,fname
 	fname = './xxxx.dumpwf.xxxx'
-	WRITE (fname(3:6), '(I4)') LOOPNO
-	WRITE (fname(15:18), '(I4)') t
+	WRITE (fname(3:6), '(I4.4)') LOOPNO
+	WRITE (fname(15:18), '(I4.4)') t
 	open (999, FILE = fname)
 	do i = -NX/2, NX/2
 		do j = -NY/2, NY/2
