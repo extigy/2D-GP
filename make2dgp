@@ -22,7 +22,7 @@ make
 #if [ $? == 0 ]; then
 mv gp $origdir
 mv *.mod $origdir
-cp makemovie.sh params.in ic.in $origdir
+cp params.in ic.in $origdir
 cp -r ./scripts $origdir/
 #fi
 make clean
