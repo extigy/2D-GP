@@ -53,7 +53,7 @@ function [FX0,FX1,FX2,FX3,FY0,FY1,FY2,FY3] = gpeget2dforcesplit(psi,gridx,gridy,
         rhoDv(k,:,:) = density.*squeeze(DPot(k,:,:));
     end 
     
-    %imagesc(gridx,gridy,squeeze(DsumT0(1,:,:)))
+    imagesc(gridx,gridy,squeeze(rhoDv(1,:,:)))
     FX0 = dx*dx*simpson(simpson(squeeze(DsumT0(1,:,:)).*(potential>1)));
     FX1 = dx*dx*simpson(simpson(squeeze(DsumT1(1,:,:)).*(potential>1)));
     FX2 = dx*dx*simpson(simpson(squeeze(DsumT2(1,:,:)).*(potential>1)));

@@ -446,7 +446,9 @@ subroutine set_homg_sq(i,j,sizexy)
 
 	do ii = i-sizexy,i+sizexy
 		do jj = j-sizexy, j+sizexy
-			GRID(ii,jj) = 1.0d0*exp(EYE*phase(ii,jj));
+			if (ii > -NX/2 .and. ii < NX/2 .and. jj > -NY/2 .and. jj < NY/2) then 
+				GRID(ii,jj) = 1.0d0*exp(EYE*phase(ii,jj));
+			end if
 		end do
 	end do
 end subroutine
