@@ -9,33 +9,18 @@ vely(dims(1),dims(2)) = 0;
 presort(dims(1),dims(2)) = 0;
 postsort(dims(1),dims(2)) = 0;
 
-phase = unwrap(ophase);
+phase = ophase;
 for i = 2:dims(1)-1
 for j = 2:dims(2)-1
-	if (phase(i+1,j)-phase(i-1,j)<-(pi/2.0d0))
-		temp1 = phase(i+1,j)-(phase(i-1,j) - pi);
-    elseif (phase(i+1,j)-phase(i-1,j)>(pi/2.0d0))
-		temp1 = phase(i+1,j)-(phase(i-1,j) + pi);
-	else
-		temp1 = phase(i+1,j)-phase(i-1,j);
-    end
-	velx(i,j) = real(temp1)/dspace;
+    temp1 = anglediff(phase(i+1,j),phase(i-1,j));
+    velx(i,j) = real(temp1)/dspace;
+ end
 end
-end
-
-phase = unwrap(ophase,[],2);
 
 for i = 2:dims(1)-1
 for j = 2:dims(2)-1
-	if (phase(i,j+1)-phase(i,j-1)<-(pi/2.0d0))
-		temp1 = phase(i,j+1)-(phase(i,j-1) - pi);
-    elseif (phase(i,j+1)-phase(i,j-1)>(pi/2.0d0))
-		temp1 = phase(i,j+1)-(phase(i,j-1) + pi);
-	else
-		temp1 = phase(i,j+1)-phase(i,j-1);
-    end
-	vely(i,j) = real(temp1)/dspace;
-end
+    temp1 = anglediff(phase(i,j+1),phase(i,j-1));
+    vely(i,j) = real(temp1)/dspace;
 end
 
 for i = 6:1:dims(1)-6
@@ -54,9 +39,12 @@ end
 %imagesc(sqrt(velx.*velx+vely.*vely))
 %imagesc(gridx,gridy,dens)
 %imagesc(dens)
-%imagesc(presort);
-h = fspecial('gaussian', size(presort), 0.2);
+imagesc(presort);
+
+h = fspecial('gaussian', size(presort), 1.0);
 presort = imfilter(presort, h);
+
+%figure
 %imagesc(presort);
 
 negareas = bwlabel(presort>2);
@@ -101,6 +89,40 @@ function ret = LINEINTVF(fieldx,fieldy,x,ex,y,ey)
 	ret = l2+l3-l4-l1;
 end
 
-
+h=figure();
+imagesc(gridx,gridy,dens);
+colormap(gray);
+axis image;
+axis xy;
+hold on;
+g = gscatter(xlocs,ylocs,pol,['b','r'],['^','o'],5,'off');
+        if(length(g)==1 && pol(1)==1)
+            set(g(1), 'MarkerFaceColor', 'r')
+            set(g(1),'Marker','o');
+            set(g(1),'MarkerEdgeColor','none');
+        end
+        if(length(g)==1 && pol(1)==-1)
+            set(g(1), 'MarkerFaceColor', 'b')
+            set(g(1),'Marker','^');
+            set(g(1),'MarkerEdgeColor','none');
+        end
+        if(length(g)>1)
+            set(g(1),'MarkerEdgeColor','none');
+            set(g(1), 'MarkerFaceColor', 'b')
+            set(g(2),'MarkerEdgeColor','none');
+            set(g(2), 'MarkerFaceColor', 'r')
+        end
+xlabel('x', 'FontSize',16);
+ylabel('y', 'FontSize',16);
+ax = findobj(h,'type','axes','Tag','');
+set(ax,'FontSize',16)
+function d = anglediff(th1, th2)
+    if nargin < 2
+        d = th1;
+    else
+        d = th1 - th2;
+    end
+    d = mod(d+pi, 2*pi) - pi;
+end
 end
 

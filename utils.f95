@@ -100,9 +100,9 @@ subroutine calc_misc
 	implicit none
 	double precision :: energy
 	double precision, dimension(2) :: force
-	call calc_force(force)
+	!call calc_force(force)
 	call calc_energy(energy)
-    write (unit=8,fmt="(f7.2,f15.8,5f15.10)") time,energy,force(1),force(2)
+    write (unit=8,fmt="(f7.2,f15.8)") time,energy
     flush(8)
 end subroutine
 
@@ -204,6 +204,7 @@ subroutine calc_energy(energy)
 	if(RHSType .eq. 1) then
 		gg=harm_osc_C
 	end if
+	!$OMP PARALLEL DO
 	do i = -NX/2+1, NX/2-1
 		do j = -NY/2+1, NY/2-1
 			uu=GRID(i,j)
@@ -215,6 +216,7 @@ subroutine calc_energy(energy)
 				+ OBJPOT(i,j)*uu*conjg(uu)
 		end do
 	end do
+	!$OMP END PARALLEL DO
 	energy = energy*DSPACE*DSPACE
 end subroutine
 
@@ -248,6 +250,24 @@ subroutine insert_vortex(xloc,yloc,circ)
 		end do
 	end do
 	GRID = GRID*R*phse;
+end subroutine
+
+subroutine insert_vortex_phase(xloc,yloc,circ)
+	use params
+	implicit none
+	integer :: i,j,k
+	double precision :: xloc,yloc,rs,xx,yy,circ
+	double precision, dimension(-NX/2:NX/2,-NY/2:NY/2) :: R
+	complex*16, dimension(-NX/2:NX/2,-NY/2:NY/2) :: phse
+
+	do i = -NX/2, NX/2
+		do j = -NY/2, NY/2
+			xx = (i*DSPACE)
+			yy = (j*DSPACE)
+			phse(i,j) = exp(circ*EYE*(atan2(yy-yloc,xx-xloc)))
+		end do
+	end do
+	GRID = GRID*phse;
 end subroutine
 
 subroutine velxy(phase,velx,vely)

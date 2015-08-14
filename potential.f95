@@ -27,6 +27,7 @@ subroutine calc_OBJPOT
 			end if
 		end if
 		if (enableTrap) then
+			!$OMP PARALLEL DO
 			do i = -NX/2,NX/2
 			do j = -NY/2,NY/2
 				OBJPOT(i,j) = OBJPOT(i,j)&
@@ -34,6 +35,7 @@ subroutine calc_OBJPOT
 					+(dble(j)*DSPACE+TYDASH)*(dble(j)*DSPACE+TYDASH))
 			end do
 			end do
+			!$OMP END PARALLEL DO
 		end if
 	end if
 	!Shin Experiment
@@ -154,6 +156,7 @@ subroutine calc_OBJPOT_obj
 	implicit none
 	integer :: i,j,obj
 	double precision :: rx,ry,r2
+	!$OMP PARALLEL DO
 	do i = -NX/2,NX/2
 		do j = -NY/2,NY/2
 			rx = (dble(i)*DSPACE)-OBJXDASH
@@ -162,6 +165,7 @@ subroutine calc_OBJPOT_obj
 				EXP(-(1.0d0/RRX**2.0d0)*(rx**2.0d0) - (1.0d0/RRY**2.0d0)*(ry**2.0d0))
 		end do
 	end do
+	!$OMP END PARALLEL DO
 end subroutine
 
 
@@ -170,6 +174,7 @@ subroutine calc_OBJPOT_osc
 	implicit none
 	integer :: i,j,obj
 	double precision :: rx,ry,r2
+	!$OMP PARALLEL DO
 	do i = -NX/2,NX/2
 		do j = -NY/2,NY/2
 			rx = (dble(i)*DSPACE)-OBJXDASH-(OBJAMP*sin(OBJW*TIME))
@@ -178,6 +183,7 @@ subroutine calc_OBJPOT_osc
 				EXP(-(1.0d0/RRX**2.0d0)*(rx**2.0d0) - (1.0d0/RRY**2.0d0)*(ry**2.0d0))
 		end do
 	end do
+	!$OMP END PARALLEL DO
 end subroutine
 
 subroutine calc_OBJPOT_rot

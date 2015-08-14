@@ -43,6 +43,7 @@ subroutine rhs (gt, kk,rt)
 	complex*16, dimension(-NX/2:NX/2,-NY/2:NY/2) :: gt, kk
 	kk=0
 	if(RHSType .eq. 0) then
+		!$OMP PARALLEL DO
 		do i = -NX/2,NX/2
 			do j = -NY/2,NY/2
 				kk(i,j) = 0.5d0*(4.0d0*gt(BC(i,0),BC(j,1))- gt(BC(i,0),BC(j+1,1))&
@@ -55,9 +56,11 @@ subroutine rhs (gt, kk,rt)
 						-gt(BC(i-1,0),BC(j,1)))/(2.0d0*DSPACE)	!Moving frame
 			end do
 		end do
+		!$OMP END PARALLEL DO
 	end if
 !Harmonic Dimentionless
 	if(RHSType .eq. 1) then
+		!$OMP PARALLEL DO
 		do i = -NX/2,NX/2
 			do j = -NY/2,NY/2
 				kk(i,j) = 0.5d0*(4.0d0*gt(BC(i,0),BC(j,1))- gt(BC(i,0),BC(j+1,1))&
@@ -68,12 +71,14 @@ subroutine rhs (gt, kk,rt)
 						- harm_osc_mu*gt(i,j)	!Chemical Potential
 			end do
 		end do
+		!$OMP END PARALLEL DO		
 	end if
 
 	if ((dampedX .eqv. .false.) .and. (dampedY .eqv. .false.)) then
 		kk = kk/(EYE-GAMMAC)
 	else 
 		!regional damping
+		!$OMP PARALLEL DO
 		do i = -NX/2,NX/2
 			do j = -NY/2,NY/2
 				if((dampedX .and. abs((i*DSPACE)) > dampedXDist) .and.&
@@ -92,6 +97,7 @@ subroutine rhs (gt, kk,rt)
 				end if
 			end do
 		end do
+		!$OMP END PARALLEL DO
 
 	end if
 end subroutine

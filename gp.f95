@@ -18,7 +18,7 @@ program gp
 		!!!!!!!!!!!!
 		call runit(ISTEPS,0,0)
 		include 'ic.in'
-		call runit(VSTEPS,0,0)
+		call runit(VSTEPS,2,0)
 		DT = DTSIZE
 		call add_noise
 		call runit(NSTEPS,1,1)
@@ -30,13 +30,16 @@ subroutine runit(steps,rt,plot)
 	use params
 	implicit none
 	integer :: steps,rt,i,plot
-	if (rt == 1) then
-		if (plot == 1) then
-			call dump_wavefunction(0) !dump initial condition
-		end if
+	if (plot == 1) then
+		call dump_wavefunction(0) !dump initial condition
 	end if
-	do i = STARTI, steps
+	do i = STARTI, steps	
 		call iterate(rt)
+		if(rt == 2) then !its vortex imprinting
+			if(HOLDICV == 1) then
+				include 'ic.in'
+			end if
+		end if
 		TIME = TIME + dble(DT)
 		if (modulo(i,dumputil) == 0) then
 			if (plot == 1) then
@@ -55,26 +58,20 @@ subroutine runit(steps,rt,plot)
 			close(10)
 		end if
 		if (modulo(i,dumpd) == 0) then
-			if (rt == 1) then
-				if (plot == 1) then
-					call dump_density(i)
-				end if
+			if (plot == 1) then
+				call dump_density(i)
 			end if
 		end if
 
 		if (modulo(i,vortexKillFreq) == 0) then
-			if (rt == 1) then
-				if (plot == 1) then
-					call kill_vortex_far()
-				end if
+			if (plot == 1) then
+				call kill_vortex_far()
 			end if
 		end if
 
 		if (modulo(i,dumpwf) == 0) then
-			if (rt == 1) then
-				if (plot == 1) then
-					call dump_wavefunction(i)
-				end if
+			if (plot == 1) then
+				call dump_wavefunction(i)
 			end if
 		end if
 		if(potRep .eq. 1 .and. rt == 1) then

@@ -4,6 +4,7 @@ module params
   integer :: NSTEPS=10000
   integer :: ISTEPS=2000
   integer :: VSTEPS=2000
+  integer :: HOLDICV = 0
 
   !Resolution
   integer :: NX = 512
