@@ -42,9 +42,7 @@ subroutine runit(steps,rt,plot)
 		end if
 		TIME = TIME + dble(DT)
 		if (modulo(i,dumputil) == 0) then
-			if (plot == 1) then
 				call calc_misc
-			end if
 		end if
 		if (modulo(i,10) == 0) then
 			open (10, FILE = "STATUS")

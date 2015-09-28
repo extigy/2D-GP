@@ -18,6 +18,7 @@ module params
   integer :: RHSType = 1
   double precision :: harm_osc_C = 100.0d0
   double precision :: harm_osc_mu = 5.64d0
+  logical :: renormalise_mu = .false.
   complex*16 :: GAMMAC = 0.0d0
   logical :: rtNorm = .false.
 

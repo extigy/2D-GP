@@ -28,10 +28,10 @@ function gpe2dmakemoviehomg(dirarg,startno,stride,endno,speed,nx,ny)
         % end
         xlabel('x/\xi', 'FontSize',16);
         ylabel('y/\xi', 'FontSize',16);
-        %axis([190 410 -50 50]);
+        axis([190 410 -50 50]);
         ax = findobj(h,'type','axes','Tag','');
         %set(ax,'YTick',[-40,-20,0,20,40]);
-        set(ax,'FontSize',16)
+       % set(ax,'FontSize',16)
         filename = strcat(pngfolder, '/p%04d.png');
         finalfname = sprintf(filename,j);
         print (h,'-dpng','-r150',finalfname);

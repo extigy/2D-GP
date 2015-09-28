@@ -74,31 +74,35 @@ subroutine rhs (gt, kk,rt)
 		!$OMP END PARALLEL DO		
 	end if
 
-	if ((dampedX .eqv. .false.) .and. (dampedY .eqv. .false.)) then
-		kk = kk/(EYE-GAMMAC)
-	else 
-		!regional damping
-		!$OMP PARALLEL DO
-		do i = -NX/2,NX/2
-			do j = -NY/2,NY/2
-				if((dampedX .and. abs((i*DSPACE)) > dampedXDist) .and.&
-		 		   (dampedY .and. abs((j*DSPACE)) > dampedYDist)) then
-					kk(i,j) = kk(i,j)/(EYE-GAMMAC-&
-							  max(0.0d0,min(dampedgamma,dampedgamma*0.5*(tanh((abs((i*DSPACE))-dampedXDist-3.0)/2.0)+1)+&
-							  dampedgamma*0.5*(tanh((abs((j*DSPACE))-dampedYDist-3.0)/2.0)+1))))
-				else if(dampedX .and. abs((i*DSPACE)) > dampedXDist) then
-					kk(i,j) = kk(i,j)/(EYE-GAMMAC-&
-							  dampedgamma*0.5*(tanh((abs((i*DSPACE))-dampedXDist-3.0)/2.0)+1))
-				else if(dampedY .and. abs((j*DSPACE)) > dampedYDist) then
-					kk(i,j) = kk(i,j)/(EYE-GAMMAC-&
-							  dampedgamma*0.5*(tanh((abs((j*DSPACE))-dampedYDist-3.0)/2.0)+1))
-				else 
-					kk(i,j) = kk(i,j)/EYE 
-				end if
+	if (rt == 1) then ! do we need to do damping?
+		if ((dampedX .eqv. .false.) .and. (dampedY .eqv. .false.)) then
+			kk = kk/(EYE-GAMMAC)
+		else 
+			!regional damping
+			!$OMP PARALLEL DO
+			do i = -NX/2,NX/2
+				do j = -NY/2,NY/2
+					if((dampedX .and. abs((i*DSPACE)) > dampedXDist) .and.&
+			 		   (dampedY .and. abs((j*DSPACE)) > dampedYDist)) then
+						kk(i,j) = kk(i,j)/(EYE-GAMMAC-&
+								  max(0.0d0,min(dampedgamma,dampedgamma*0.5*(tanh((abs((i*DSPACE))-dampedXDist-3.0)/2.0)+1)+&
+								  dampedgamma*0.5*(tanh((abs((j*DSPACE))-dampedYDist-3.0)/2.0)+1))))
+					else if(dampedX .and. abs((i*DSPACE)) > dampedXDist) then
+						kk(i,j) = kk(i,j)/(EYE-GAMMAC-&
+								  dampedgamma*0.5*(tanh((abs((i*DSPACE))-dampedXDist-3.0)/2.0)+1))
+					else if(dampedY .and. abs((j*DSPACE)) > dampedYDist) then
+						kk(i,j) = kk(i,j)/(EYE-GAMMAC-&
+								  dampedgamma*0.5*(tanh((abs((j*DSPACE))-dampedYDist-3.0)/2.0)+1))
+					else 
+						kk(i,j) = kk(i,j)/EYE 
+					end if
+				end do
 			end do
-		end do
-		!$OMP END PARALLEL DO
+			!$OMP END PARALLEL DO
 
+		end if
+	else
+		kk = kk/EYE
 	end if
 end subroutine
 

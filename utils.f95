@@ -55,8 +55,12 @@ subroutine approx
 		end do
 		GRID = SQRT(GRID)
 	end if
+	
+	!!!!!!!!!!!!!!!!!!!!!!
+	!GRID =  1.00d0
+	!!!!!!!!!!!!!!!!!!!!!!
 end subroutine
-!!!!!!!!!!!!!!!!!!!!!!
+
 
 subroutine calc_norm
 	use params
@@ -103,6 +107,9 @@ subroutine calc_misc
 	!call calc_force(force)
 	call calc_energy(energy)
     write (unit=8,fmt="(f7.2,f15.8)") time,energy
+    if(renormalise_mu) then
+		harm_osc_mu = energy
+	end if
     flush(8)
 end subroutine
 
@@ -196,28 +203,26 @@ subroutine calc_energy(energy)
 	implicit none
 	integer :: i,j
 	COMPLEX*16 :: uux,uuy,uu
-	double precision :: energy,gg
-	energy = 0.0d0
+	COMPLEX*16, dimension(-NX/2:NX/2,-NY/2:NY/2) :: EE
+	double precision :: energy,gg,simpsons_int_grid
 	if(RHSType .eq. 0) then
 		gg=1.0d0
 	end if
 	if(RHSType .eq. 1) then
 		gg=harm_osc_C
 	end if
-	!$OMP PARALLEL DO
-	do i = -NX/2+1, NX/2-1
-		do j = -NY/2+1, NY/2-1
+	do i = -NX/2+2, NX/2-2
+		do j = -NY/2+2, NY/2-2
 			uu=GRID(i,j)
-			uux=(GRID(i+1,j)-GRID(i-1,j))/(2.0d0*DSPACE)
-			uuy=(GRID(i,j+1)-GRID(i,j-1))/(2.0d0*DSPACE)
+			uux=(GRID(i-2,j)-8*GRID(i-1,j)+8*GRID(i+1,j)-GRID(i+2,j))/(12.0d0*DSPACE)
+			uuy=(GRID(i,j-2)-8*GRID(i,j-1)+8*GRID(i,j+1)-GRID(i,j+2))/(12.0d0*DSPACE)
 
-			energy = energy + 0.5d0*((uux*CONJG(uux))+(uuy*CONJG(uuy))) &
+			EE(i,j) = 0.5d0*((uux*uux)+(uuy*uuy)) &
 				+ 0.5d0*gg*uu*conjg(uu)*uu*conjg(uu)&
 				+ OBJPOT(i,j)*uu*conjg(uu)
 		end do
 	end do
-	!$OMP END PARALLEL DO
-	energy = energy*DSPACE*DSPACE
+	energy = simpsons_int_grid(DBLE(EE))
 end subroutine
 
 subroutine calc_phase(phase)
