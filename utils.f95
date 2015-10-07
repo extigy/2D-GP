@@ -1,3 +1,77 @@
+subroutine dump_density (II)
+	use params
+	implicit none
+	integer :: II,i,j
+	character(len=80) fname
+	write(fname, '(i0.4,a,i0.4)') LOOPNO,'.dump.',II/dumpd
+	open (7, FILE = fname)
+	do i = -NX/2, NX/2
+		do j = -NY/2, NY/2
+			write (unit=7,fmt="(2f10.2, f20.16)")&
+				dble(i*DSPACE),dble(j*DSPACE),dble(GRID(i,j)*CONJG(GRID(i,j)))
+		end do
+		write (unit=7,fmt="(a)") " "
+	end do
+	close(7)
+end subroutine
+
+subroutine dump_wavefunction (II)
+	use params
+	implicit none
+	integer :: II,i,j
+	character(len=80) fname
+	write(fname, '(i0.4,a,i0.4)') LOOPNO,'.dumpwf.',II/dumpwf
+	open (7, FILE = fname)
+	do i = -NX/2, NX/2
+		do j = -NY/2, NY/2
+			write (unit=7,fmt="(f10.2,f10.2,3F20.10)")&
+				dble(i*DSPACE),dble(j*DSPACE),dble(GRID(i,j)),&
+				aimag(GRID(i,j)),DBLE(OBJPOT(i,j))
+		end do
+		write (unit=7,fmt="(a)") " "
+	end do
+	close(7)
+end subroutine
+
+subroutine dump_phase (II)
+	use params
+	implicit none
+	integer :: II,i,j
+	character(len=80) fname
+	double precision, dimension(-NX/2:NX/2,-NY/2:NY/2) :: phase
+	write(fname, '(i0.4,a,i0.4)') LOOPNO,'.phase.',II/dumpd
+	call calc_phase(phase)
+	open (7, FILE = fname)
+	do i = -NX/2, NX/2
+		do j = -NY/2, NY/2
+			write (unit=7,fmt="(2f10.2, f20.16)")&
+				dble(i*DSPACE),dble(j*DSPACE),dble(phase(i,j))
+		end do
+		write (unit=7,fmt="(a)") " "
+	end do
+	close(7)
+end subroutine
+
+subroutine dump_velocity (II)
+	use params
+	implicit none
+	integer :: II,i,j
+	character(len=80) fname
+	double precision, dimension(-NX/2:NX/2,-NY/2:NY/2) :: phase,velx,vely
+	write(fname, '(i0.4,a,i0.4)') LOOPNO,'.velocity.',II/dumpd
+	call calc_phase(phase)
+	call velxy(phase,velx,vely)
+	open (7, FILE = fname)
+	do i = -NX/2, NX/2
+		do j = -NY/2, NY/2
+			write (unit=7,fmt="(2f10.2, 2f20.16)")&
+				dble(i*DSPACE),dble(j*DSPACE),velx(i,j),vely(i,j)
+		end do
+		write (unit=7,fmt="(a)") " "
+	end do
+	close(7)
+end subroutine
+
 subroutine add_noise
 	use params
 	implicit none
@@ -105,8 +179,9 @@ subroutine calc_misc
 	double precision :: energy
 	double precision, dimension(2) :: force
 	!call calc_force(force)
+	call calc_norm
 	call calc_energy(energy)
-    write (unit=8,fmt="(f7.2,f15.8)") time,energy
+    write (unit=8,fmt="(f7.2,2f15.8)") time,energy,norm
     if(renormalise_mu) then
 		harm_osc_mu = energy
 	end if

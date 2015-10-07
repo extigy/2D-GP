@@ -5,12 +5,14 @@ FCFLAGS = -O3 -fopenmp
 
 LDFLAGS = -I/usr/include/ -L/usr/lib/
 
-PROGRAMS = gp
+PROGRAMS = gp mu
 
 
 all: $(PROGRAMS)
 
 gp: params.o bitmap.o utils.o rhs.o potential.o
+
+mu: mu.o params.o bitmap.o utils.o rhs.o potential.o
 
 %: %.o
 	$(FC) $(FCFLAGS) -o $@ $^ -lnetcdff -lnetcdf

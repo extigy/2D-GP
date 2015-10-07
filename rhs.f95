@@ -1,3 +1,56 @@
+subroutine runit(steps,rt,plot)
+	use params
+	implicit none
+	integer :: steps,rt,i,plot
+	if (plot == 1) then
+		call dump_wavefunction(0) !dump initial condition
+	end if
+	do i = STARTI, steps	
+		call iterate(rt)
+		if(rt == 2) then !its vortex imprinting
+			if(HOLDICV == 1) then
+				GRID = sqrt(GRID*conjg(GRID))
+				include 'ic.in'
+			end if
+		end if
+		TIME = TIME + dble(DT)
+		if (modulo(i,dumputil) == 0) then
+				call calc_misc
+		end if
+		if (modulo(i,10) == 0) then
+			open (10, FILE = "STATUS")
+			if (rt == 1) then
+					write (unit=10,fmt="(a,i3,a,f6.2,a)")&
+						"Simulating: ",LOOPNO, ":     ",(dble(i)/dble(steps))*100.0d0,"%"
+				else
+					write (unit=10,fmt="(a,i3,a,f6.2,a)")&
+						"Ground State: ",LOOPNO, ":     " ,(dble(i)/dble(steps))*100.0d0,"%"
+			end if
+			close(10)
+		end if
+		if (modulo(i,dumpd) == 0) then
+			if (plot == 1) then
+				call dump_density(i)
+			end if
+		end if
+
+		if (modulo(i,vortexKillFreq) == 0) then
+			if (plot == 1) then
+				call kill_vortex_far()
+			end if
+		end if
+
+		if (modulo(i,dumpwf) == 0) then
+			if (plot == 1) then
+				call dump_wavefunction(i)
+			end if
+		end if
+		if(potRep .eq. 1 .and. rt == 1) then
+			call calc_OBJPOT
+		end if
+	end do
+end subroutine
+
 !Runge-Kutta 4th Order!
 
 subroutine iterate (rt)
@@ -8,10 +61,10 @@ subroutine iterate (rt)
 	complex*16, dimension(-NX/2:NX/2,-NY/2:NY/2) :: k1,k2,k3,k4
 	double precision :: energy
 
-	if (rt == 0) then
+	!if (rt .ne. 1) then
 		!call calc_norm
 		!write(6,*) NORM
-	end if
+	!end if
 
 	call rhs(GRID, k1,rt)
 	call rhs(GRID + 0.5d0*DT*k1,k2,rt)
