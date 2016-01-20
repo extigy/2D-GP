@@ -23,7 +23,7 @@ subroutine findmu()
 	complex*16, dimension(-NX/2:NX/2,-NY/2:NY/2) :: GRIDGS
 	do
 		DT = -EYE*DTSIZE
-		call runit(ISTEPS,0,0)
+		call runit(2000,0,0)
 		DT = DTSIZE	
 		call calc_norm
 		normgs = NORM
@@ -36,10 +36,10 @@ subroutine findmu()
 			call calc_norm
 			muold = harm_osc_mu
 			if(NORM > normgs) then
-				harm_osc_mu = harm_osc_mu - 10000.0*abs(NORM - normgs)
+				harm_osc_mu = harm_osc_mu - 5000.0*abs(NORM - normgs)
 			end if
 			if(NORM < normgs) then
-				harm_osc_mu = harm_osc_mu + 10000.0*abs(NORM - normgs)
+				harm_osc_mu = harm_osc_mu + 5000.0*abs(NORM - normgs)
 			end if		
 			write (unit=6,fmt="(f15.8)") harm_osc_mu
 			GRID = GRIDGS

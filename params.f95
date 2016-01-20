@@ -5,7 +5,7 @@ module params
   integer :: ISTEPS=2000
   integer :: VSTEPS=2000
   integer :: HOLDICV = 0
-
+  integer :: PLOTIT = 0
   !Resolution
   integer :: NX = 512
   integer :: NY = 512
@@ -14,7 +14,7 @@ module params
   !Dump frequency - Density - Wavefunction - Misc Utils
   integer :: dumpd = 100, dumpwf = 100, dumputil = 100
 
-  !GPE Type - 0 Natural Units - 1 Hamonic Oscillator Units
+  !GPE Type - 0 Natural Units - 1 Hamonic Oscillator Units - 2 Hamonic Oscillator Units Rotating
   integer :: RHSType = 1
   double precision :: harm_osc_C = 100.0d0
   double precision :: harm_osc_mu = 5.64d0
@@ -22,7 +22,7 @@ module params
   complex*16 :: GAMMAC = 0.0d0
   logical :: rtNorm = .false.
 
-  !Boundary Conditions - 0 reflective - 1 periodic
+  !Boundary Conditions - 0 reflective - 1 periodic - 2 zero
   integer :: BCX = 0
   integer :: BCY = 0
 
@@ -32,7 +32,8 @@ module params
   !Flow Speed in X Dir - Start End Stride
   integer :: VOBS = 0, VOBE = 0, VOBST = 1
   double precision :: VOBSCALE = 100.0
-  
+  double precision :: ROM = 0.0d0
+   
   !Potential types - 0 object - 1 free rotational obj - 2 oscillating obj - 3 afm-img
   logical :: enablePot = .true.
   logical :: enableTrap = .false.
@@ -58,6 +59,8 @@ module params
   double precision :: TYDASH=0.0d0
   double precision :: TVXDASH=0.0d0
   double precision :: TVYDASH=0.0d0
+  double precision :: TXSCALE = 1.0d0 
+  double precision :: TYSCALE = 1.0d0
   double precision :: TTM=0.0d0
 
   !AFM-IMAGE
@@ -97,7 +100,7 @@ module params
   complex*16 :: DT,EYE = (0.0d0,1.0d0)
   double precision :: NORM,OLDNORM = 1.0d0
   complex*16, dimension(:,:), ALLOCATABLE :: GRID,OBJPOT
-  double precision :: TIME
+  double precision :: TIME,IMAGTIME
   double precision, dimension(2) :: FVECOLD = 0.0d0
   double precision :: OBJYVEL = 0.0d0,OBJXVEL = 0.0d0
 

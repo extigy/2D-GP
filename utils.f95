@@ -24,7 +24,7 @@ subroutine dump_wavefunction (II)
 	open (7, FILE = fname)
 	do i = -NX/2, NX/2
 		do j = -NY/2, NY/2
-			write (unit=7,fmt="(f10.2,f10.2,3F20.10)")&
+			write (unit=7,fmt="(2f16.8,3ES26.10E3)")&
 				dble(i*DSPACE),dble(j*DSPACE),dble(GRID(i,j)),&
 				aimag(GRID(i,j)),DBLE(OBJPOT(i,j))
 		end do
@@ -176,15 +176,13 @@ end function
 subroutine calc_misc
 	use params
 	implicit none
-	double precision :: energy
+	double precision :: energy,energy_kin,energy_pot,energy_int
 	double precision, dimension(2) :: force
 	!call calc_force(force)
 	call calc_norm
 	call calc_energy(energy)
-    write (unit=8,fmt="(f7.2,2f15.8)") time,energy,norm
-    if(renormalise_mu) then
-		harm_osc_mu = energy
-	end if
+	call calc_energysplit(energy_kin,energy_pot,energy_int)
+    write (unit=8,fmt="(7f26.16)") TIME,-IMAGTIME,energy,norm,energy_kin,energy_pot,energy_int
     flush(8)
 end subroutine
 
@@ -292,12 +290,68 @@ subroutine calc_energy(energy)
 			uux=(GRID(i-2,j)-8*GRID(i-1,j)+8*GRID(i+1,j)-GRID(i+2,j))/(12.0d0*DSPACE)
 			uuy=(GRID(i,j-2)-8*GRID(i,j-1)+8*GRID(i,j+1)-GRID(i,j+2))/(12.0d0*DSPACE)
 
-			EE(i,j) = 0.5d0*((uux*uux)+(uuy*uuy)) &
+			EE(i,j) = 0.5d0*(uux*conjg(uux)+uuy*conjg(uuy)) &
 				+ 0.5d0*gg*uu*conjg(uu)*uu*conjg(uu)&
 				+ OBJPOT(i,j)*uu*conjg(uu)
 		end do
 	end do
 	energy = simpsons_int_grid(DBLE(EE))
+end subroutine
+
+subroutine calc_energysplit(energy_kin,energy_pot,energy_int)
+	use params
+	implicit none
+	integer :: i,j
+	COMPLEX*16 :: uux,uuy,uu
+	COMPLEX*16, dimension(-NX/2:NX/2,-NY/2:NY/2) :: EEkin,EEpot,EEint
+	double precision :: energy_kin,energy_int,energy_pot,gg,simpsons_int_grid
+	if(RHSType .eq. 0) then
+		gg=1.0d0
+	end if
+	if(RHSType .eq. 1) then
+		gg=harm_osc_C
+	end if
+	do i = -NX/2+2, NX/2-2
+		do j = -NY/2+2, NY/2-2
+			uu=GRID(i,j)
+			uux=(GRID(i-2,j)-8*GRID(i-1,j)+8*GRID(i+1,j)-GRID(i+2,j))/(12.0d0*DSPACE)
+			uuy=(GRID(i,j-2)-8*GRID(i,j-1)+8*GRID(i,j+1)-GRID(i,j+2))/(12.0d0*DSPACE)
+
+			EEkin(i,j) = 0.5d0*(uux*conjg(uux)+uuy*conjg(uuy))
+			EEint(i,j) = 0.5d0*gg*uu*conjg(uu)*uu*conjg(uu)
+			EEpot(i,j) = OBJPOT(i,j)*uu*conjg(uu)
+		end do
+	end do
+	energy_kin = simpsons_int_grid(DBLE(EEkin))
+	energy_pot = simpsons_int_grid(DBLE(EEpot))
+	energy_int = simpsons_int_grid(DBLE(EEint))
+end subroutine
+
+subroutine calc_mu(mu)
+	use params
+	implicit none
+	integer :: i,j
+	COMPLEX*16 :: uux,uuy,uu
+	COMPLEX*16, dimension(-NX/2:NX/2,-NY/2:NY/2) :: EE
+	double precision :: mu,gg,simpsons_int_grid
+	if(RHSType .eq. 0) then
+		gg=1.0d0
+	end if
+	if(RHSType .eq. 1) then
+		gg=harm_osc_C
+	end if
+	do i = -NX/2+2, NX/2-2
+		do j = -NY/2+2, NY/2-2
+			uu=GRID(i,j)
+			uux=(GRID(i-2,j)-8*GRID(i-1,j)+8*GRID(i+1,j)-GRID(i+2,j))/(12.0d0*DSPACE)
+			uuy=(GRID(i,j-2)-8*GRID(i,j-1)+8*GRID(i,j+1)-GRID(i,j+2))/(12.0d0*DSPACE)
+
+			EE(i,j) = 0.5d0*(uux*conjg(uux)+uuy*conjg(uuy)) &
+				+ gg*uu*conjg(uu)*uu*conjg(uu)&
+				+ OBJPOT(i,j)*uu*conjg(uu)
+		end do
+	end do
+	mu = simpsons_int_grid(DBLE(EE))
 end subroutine
 
 subroutine calc_phase(phase)
@@ -311,6 +365,16 @@ subroutine calc_phase(phase)
 		end do
 	end do
 end subroutine
+
+subroutine insert_rand_vortex(n,r,circ)
+	use params
+	implicit none
+	integer :: i,n
+	double precision ::circ,r
+	do i = 1,n
+		call insert_vortex(dble(r*RAND() - r/2.0),dble(r*RAND() - r/2.0),circ) 
+	end do
+end
 
 subroutine insert_vortex(xloc,yloc,circ)
 	use params

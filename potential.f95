@@ -31,8 +31,8 @@ subroutine calc_OBJPOT
 			do i = -NX/2,NX/2
 			do j = -NY/2,NY/2
 				OBJPOT(i,j) = OBJPOT(i,j)&
-					+0.5d0*((dble(i)*DSPACE+TXDASH)*(dble(i)*DSPACE+TXDASH)&
-					+(dble(j)*DSPACE+TYDASH)*(dble(j)*DSPACE+TYDASH))
+					+0.5d0*TXSCALE*((dble(i)*DSPACE+TXDASH)*(dble(i)*DSPACE+TXDASH))&
+					+0.5d0*TYSCALE*((dble(j)*DSPACE+TYDASH)*(dble(j)*DSPACE+TYDASH))
 			end do
 			end do
 			!$OMP END PARALLEL DO

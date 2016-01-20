@@ -1,4 +1,4 @@
-function gpe2dplottracks(tracks,adjacency_tracks, points)
+function track_points_all = gpe2dplottracks(tracks,adjacency_tracks, points)
 
 n_tracks = numel(tracks);
 
@@ -6,20 +6,18 @@ n_tracks = numel(tracks);
 %    points{i} = [points{i},repmat(i,length(points{i}),1)];
 %end
 all_points = vertcat(points{:});
-
-
+track_points_all = cell(2,1);
+ci = 1;
+cc=jet(4);
 for i_track = 1 : n_tracks
     track = adjacency_tracks{i_track};
     track_points = all_points(track, :);
-    if(track_points(1,3)<0 && length(track_points(:,1))>10)
-        plot(smooth(track_points(:,1)',20,'moving'),smooth(track_points(:,2)',20,'moving'),'LineWidth',2);
+    if(length(track_points(:,1)) > 1250)
+        plot(track_points(:,1)',track_points(:,2)','LineWidth',2,'color',cc(ci,:));
+        track_points_all{1,ci} = track_points(:,1)';
+        track_points_all{2,ci} = track_points(:,2)';
+        ci = ci + 1;
     end
-    
-   if(track_points(1,3)>0 && length(track_points(:,1))>10)
-        plot(smooth(track_points(:,1)',20,'moving'),smooth(track_points(:,2)',20,'moving'),'r','LineWidth',2);
-   end
-    
-        
     hold on
 end
 end

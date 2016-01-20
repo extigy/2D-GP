@@ -1,19 +1,20 @@
 subroutine runit(steps,rt,plot)
 	use params
 	implicit none
-	integer :: steps,rt,i,plot
+	integer :: steps,rt,i,ii,ji,plot
 	if (plot == 1) then
 		call dump_wavefunction(0) !dump initial condition
 	end if
 	do i = STARTI, steps	
 		call iterate(rt)
 		if(rt == 2) then !its vortex imprinting
-			if(HOLDICV == 1) then
+			if(HOLDICV == 1 .and. modulo(i,10) == 9) then
 				GRID = sqrt(GRID*conjg(GRID))
 				include 'ic.in'
 			end if
 		end if
 		TIME = TIME + dble(DT)
+		IMAGTIME = IMAGTIME + imag(DT)
 		if (modulo(i,dumputil) == 0) then
 				call calc_misc
 		end if
@@ -59,11 +60,11 @@ subroutine iterate (rt)
 	implicit none
 	integer :: rt,BC
 	complex*16, dimension(-NX/2:NX/2,-NY/2:NY/2) :: k1,k2,k3,k4
-	double precision :: energy
+	double precision :: energy,mu
 
 	!if (rt .ne. 1) then
-		!call calc_norm
-		!write(6,*) NORM
+		!call calc_mu(mu)
+		!write(6,*) mu
 	!end if
 
 	call rhs(GRID, k1,rt)
@@ -72,7 +73,7 @@ subroutine iterate (rt)
 	call rhs(GRID + DT*k3,k4,rt)
 	GRID = GRID + DT*(k1 + 2.0d0*k2 + 2.0d0*k3 + k4)/6.0d0
 
-	if (rt == 0 .or. rtNorm) then
+	if (rt .ne. 1 .or. rtNorm) then
 		if (RHSType .eq. 0) then
 			call calc_norm
 			GRID = GRID/sqrt(NORM)
@@ -121,12 +122,16 @@ subroutine rhs (gt, kk,rt)
 						-gt(BC(i-1,0),BC(j,1)))/(DSPACE**2.0d0)&	!laplacian
 						+harm_osc_C*gt(i,j)*gt(i,j)*CONJG(gt(i,j))&	!Nonlinear
 			 			+OBJPOT(i,j)*gt(i,j)&	!potential
-						- harm_osc_mu*gt(i,j)	!Chemical Potential
+						- harm_osc_mu*gt(i,j)&	!Chemical Potential
+						-ROM*EYE*(i*DSPACE)*(gt(BC(i,0),BC(j+1,1))&
+						-gt(BC(i,0),BC(j-1,1)))/(2.0d0*DSPACE)&
+						+ROM*EYE*(j*DSPACE)*(gt(BC(i+1,0),BC(j,1))&
+						-gt(BC(i-1,0),BC(j,1)))/(2.0d0*DSPACE) !Rotating frame
 			end do
 		end do
 		!$OMP END PARALLEL DO		
 	end if
-
+	
 	if (rt == 1) then ! do we need to do damping?
 		if ((dampedX .eqv. .false.) .and. (dampedY .eqv. .false.)) then
 			kk = kk/(EYE-GAMMAC)
@@ -169,14 +174,18 @@ integer function BC(s,n)
 	select case (n)
     	case (0)
     		if(s.eq.NX/2+1  .and. BCX.eq.0)BC=NX/2
-				if(s.eq.NX/2+1  .and. BCX.eq.1)BC=-NX/2
+			if(s.eq.NX/2+1  .and. BCX.eq.1)BC=-NX/2
+			if(s.eq.NX/2+1  .and. BCX.eq.2)BC=0
     		if(s.eq.-NX/2-1 .and. BCX.eq.0)BC=-NX/2
-				if(s.eq.-NX/2-1 .and. BCX.eq.1)BC=NX/2
+			if(s.eq.-NX/2-1 .and. BCX.eq.1)BC=NX/2
+			if(s.eq.-NX/2-1 .and. BCX.eq.2)BC=0
     	case (1)
     		if(s.eq.NY/2+1  .and. BCY.eq.0)BC=NY/2
-				if(s.eq.NY/2+1  .and. BCY.eq.1)BC=-NY/2
+			if(s.eq.NY/2+1  .and. BCY.eq.1)BC=-NY/2
+			if(s.eq.NY/2+1  .and. BCY.eq.2)BC=0
     		if(s.eq.-NY/2-1 .and. BCY.eq.0)BC=-NY/2
-				if(s.eq.-NY/2-1 .and. BCY.eq.1)BC=NY/2
+			if(s.eq.-NY/2-1 .and. BCY.eq.1)BC=NY/2
+			if(s.eq.-NY/2-1 .and. BCY.eq.2)BC=0	
 	end select
 end function
 !!!!!!!!!!!!!!!!!!!!!!!!!!
