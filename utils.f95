@@ -688,3 +688,29 @@ subroutine kill_vortex_far()
 	end do
 
 end subroutine
+
+
+subroutine detect_vortex(ret)
+	use params
+	implicit none
+	double precision, dimension(-NX/2:NX/2,-NY/2:NY/2) :: phase,velx,vely,vortfield
+	integer, dimension(-NX/2:NX/2,-NY/2:NY/2) :: posfield, negfield,poslabels,neglabels
+	integer :: maxlabel,ret
+
+	ret = 0
+	call calc_phase(phase)
+	call velxy(phase,velx,vely)
+	call calc_vortex_field(velx, vely, vortfield)
+	call pos_neg_binary(vortfield, 0.5d0, posfield, negfield)
+	call bw_label(posfield,poslabels)
+	call bw_label(negfield,neglabels)
+
+	maxlabel = maxval(poslabels)
+	if(maxlabel > -1) then
+		ret = 1
+	end if
+	maxlabel = maxval(neglabels)
+	if(maxlabel > -1) then
+		ret = 1
+	end if
+end

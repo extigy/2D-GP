@@ -81,7 +81,8 @@ module params
   logical :: vortexKillY = .false.
   double precision :: vortexKillXDist = 40.0d0
   double precision :: vortexKillYDist = 0.0d0
-  integer :: vortexKillFreq = 100
+  integer :: vortexKillFreq = huge(100)
+  integer :: killgamma = 0
 
   !Damping radius
   logical :: dampedX = .false.

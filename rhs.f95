@@ -1,7 +1,7 @@
 subroutine runit(steps,rt,plot)
 	use params
 	implicit none
-	integer :: steps,rt,i,ii,ji,plot
+	integer :: steps,rt,i,ii,ji,plot,isvorts
 	if (plot == 1) then
 		call dump_wavefunction(0) !dump initial condition
 	end if
@@ -48,6 +48,10 @@ subroutine runit(steps,rt,plot)
 		end if
 		if(potRep .eq. 1 .and. rt == 1) then
 			call calc_OBJPOT
+		end if
+		if(i .eq. killgamma) then
+			write(6,*) "Killing gamma on iteration", i
+			GAMMAC = 0.0d0
 		end if
 	end do
 end subroutine

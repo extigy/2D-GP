@@ -62,7 +62,7 @@ if(onlyoneleft==0)
 end
 clusterso = clusterso(~cellfun('isempty',clusterso));  
 for cl=1:length(clusterso)
-    clusters{cl} = [points(clusterso{cl},:),polarity(clusterso{cl})'];
+    clusters{cl} = [points(clusterso{cl},:),polarity(clusterso{cl})];
 end
 free=findfreevorts(clusters,dipoles,pold,polold);
 
@@ -124,6 +124,6 @@ function [free]=findfreevorts(clusters,dipoles,pold,polold)
           end
        end
     end
-    free{1} = [pold,polold'];
+    free{1} = [pold,polold];
 end
 
