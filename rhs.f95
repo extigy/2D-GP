@@ -156,7 +156,7 @@ subroutine rhs (gt, kk,rt)
 						kk(i,j) = kk(i,j)/(EYE-GAMMAC-&
 								  dampedgamma*0.5*(tanh((abs((j*DSPACE))-dampedYDist-3.0)/2.0)+1))
 					else 
-						kk(i,j) = kk(i,j)/EYE 
+						kk(i,j) = kk(i,j)/(EYE-GAMMAC)
 					end if
 				end do
 			end do

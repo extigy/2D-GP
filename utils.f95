@@ -98,7 +98,7 @@ subroutine load_all(t)
 	open (999, FILE = fname)
 	do i = -NX/2, NX/2
 		do j = -NY/2, NY/2
-			read (999,"(f10.2,f10.2,3F20.10)") x, y, real, imag, pot
+			read (999,"(2f16.8,3ES26.10E3)") x, y, real, imag, pot
 			GRID(i,j) = real + EYE*imag
 			OBJPOT(i,j) = pot
 		end do

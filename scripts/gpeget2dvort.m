@@ -10,7 +10,7 @@ function [xlocs,ylocs,pol] = gpeget2dvort(dens,ophase,gridx,gridy,potential)
     th = 2; %threshold value. This can be freely tweaked as a way to control "sensitivity".
     disp(['Using a threshold value of ',num2str(th),'.']);
     
-    scale = 0.25;
+    scale = 1.0;
     dens = imresize(dens,scale, 'nearest');
     ophase = imresize(ophase,scale, 'nearest');
     potential = imresize(potential,scale, 'nearest');
