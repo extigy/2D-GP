@@ -47,7 +47,7 @@ The following parameters can be modified,
 
 Parameter | Default | Explanation
 --- | --- | ---
-`RHSType` | `0` | GPE Type - Set to `0` for **natural units**, `1` for **harmonic oscillator units**.
+`RHSType` | `1` | GPE Type - Set to `0` for **natural units**, `1` for **harmonic oscillator units**.
 `VOBS` | `0` | First simulation's velocity. ![v_ob](http://latex.codecogs.com/gif.latex?v_{ob}=) ![v_ob](http://latex.codecogs.com/gif.latex?%5Cdpi{80}~%5Cmathrm{VOBS}/100).
 `VOBE` | `0` | Final simulation's velocity. This is ![v_ob](http://latex.codecogs.com/gif.latex?v_{ob}=) ![v_ob](http://latex.codecogs.com/gif.latex?%5Cdpi{80}~%5Cmathrm{VOBE}/100).
 `VOBST` | `1` | Increase ![v_ob](http://latex.codecogs.com/gif.latex?v_{ob}) by ![v_ob](http://latex.codecogs.com/gif.latex?%5Cdpi{80}%5Cmathrm{VOBST}/100) per simulation.
