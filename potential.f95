@@ -260,7 +260,7 @@ subroutine calc_OBJPOT_img
 	CALL load_bmp
 	do i = -NX/2,NX/2
 		do j = -NY/2,NY/2
-			OBJPOT(i,j) = OBJHEIGHT*(Img(i,j)/255)
+			OBJPOT(i,j) = OBJHEIGHT*(Img(i,j)/255.0d0)
 		end do
 	end do
 end subroutine
