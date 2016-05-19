@@ -104,6 +104,8 @@ subroutine rhs (gt, kk,rt)
 		!$OMP PARALLEL DO
 		do i = -NX/2,NX/2
 			do j = -NY/2,NY/2
+				if(abs(i).eq.NX/2 .and. BCX.eq.2) gt(i,j) = 0.0d0
+				if(abs(j).eq.NY/2 .and. BCY.eq.2) gt(i,j) = 0.0d0
 				kk(i,j) = 0.5d0*(4.0d0*gt(BC(i,0),BC(j,1))- gt(BC(i,0),BC(j+1,1))&
 						-gt(BC(i,0),BC(j-1,1))-gt(BC(i+1,0),BC(j,1))&
 						-gt(BC(i-1,0),BC(j,1)))/(DSPACE**2.0d0)&	!laplacian
@@ -121,6 +123,8 @@ subroutine rhs (gt, kk,rt)
 		!$OMP PARALLEL DO
 		do i = -NX/2,NX/2
 			do j = -NY/2,NY/2
+				if(abs(i).eq.NX/2 .and. BCX.eq.2) gt(i,j) = 0.0d0
+                                if(abs(j).eq.NY/2 .and. BCY.eq.2) gt(i,j) = 0.0d0
 				kk(i,j) = 0.5d0*(4.0d0*gt(BC(i,0),BC(j,1))- gt(BC(i,0),BC(j+1,1))&
 						-gt(BC(i,0),BC(j-1,1))-gt(BC(i+1,0),BC(j,1))&
 						-gt(BC(i-1,0),BC(j,1)))/(DSPACE**2.0d0)&	!laplacian
@@ -178,18 +182,18 @@ integer function BC(s,n)
 	select case (n)
     	case (0)
     		if(s.eq.NX/2+1  .and. BCX.eq.0)BC=NX/2
-			if(s.eq.NX/2+1  .and. BCX.eq.1)BC=-NX/2
-			if(s.eq.NX/2+1  .and. BCX.eq.2)BC=0
+		if(s.eq.NX/2+1  .and. BCX.eq.1)BC=-NX/2
+		if(s.eq.NX/2+1  .and. BCX.eq.2)BC=NX/2
     		if(s.eq.-NX/2-1 .and. BCX.eq.0)BC=-NX/2
-			if(s.eq.-NX/2-1 .and. BCX.eq.1)BC=NX/2
-			if(s.eq.-NX/2-1 .and. BCX.eq.2)BC=0
+		if(s.eq.-NX/2-1 .and. BCX.eq.1)BC=NX/2
+		if(s.eq.-NX/2-1 .and. BCX.eq.2)BC=-NX/2
     	case (1)
     		if(s.eq.NY/2+1  .and. BCY.eq.0)BC=NY/2
-			if(s.eq.NY/2+1  .and. BCY.eq.1)BC=-NY/2
-			if(s.eq.NY/2+1  .and. BCY.eq.2)BC=0
+		if(s.eq.NY/2+1  .and. BCY.eq.1)BC=-NY/2
+		if(s.eq.NY/2+1  .and. BCY.eq.2)BC=NY/2
     		if(s.eq.-NY/2-1 .and. BCY.eq.0)BC=-NY/2
-			if(s.eq.-NY/2-1 .and. BCY.eq.1)BC=NY/2
-			if(s.eq.-NY/2-1 .and. BCY.eq.2)BC=0	
+		if(s.eq.-NY/2-1 .and. BCY.eq.1)BC=NY/2
+		if(s.eq.-NY/2-1 .and. BCY.eq.2)BC=-NY/2	
 	end select
 end function
 !!!!!!!!!!!!!!!!!!!!!!!!!!
