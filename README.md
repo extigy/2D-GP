@@ -111,8 +111,8 @@ Both **reflective** and **periodic** boundary conditions are supported.
 
 Parameter | Default | Explanation
 --- | --- | ---
-`BCX` | `0` | Boundary conditions in the x direction - Set to `0` for **reflective**, `1` for **periodic**.
-`BCY` | `0` | Boundary conditions in the y direction - Set to `0` for **reflective**, `1` for **periodic**.
+`BCX` | `0` | Boundary conditions in the x direction - Set to `0` for **reflective**, `1` for **periodic**, `2` for **zero**.
+`BCY` | `0` | Boundary conditions in the y direction - Set to `0` for **reflective**, `1` for **periodic**, `2` for **zero**.
 ---
 # Output Data
 Data is output every set amount of time steps. This output frequency can be easily customised
