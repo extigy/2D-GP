@@ -111,6 +111,47 @@ subroutine load_all(t)
 	call calc_OBJPOT
 end subroutine
 
+subroutine load_mult()
+	use params
+	implicit none
+	integer :: i,j,t
+	double precision :: x, y, real, imag, pot
+	character(2048) :: tmp,fname
+	fname = './0000.soliton.0000'
+	GRID = sqrt(GRID*CONJG(GRID))
+	open (999, FILE = fname)
+	do i = -NX/2, NX/2
+		do j = -NY/2, NY/2
+			read (999,"(2f16.8,3ES26.10E3)") x, y, real, imag, pot
+			GRID(i,j) = GRID(i,j)*(real + EYE*imag)
+		end do
+		read (999,"(a)") tmp
+	end do
+	close(999)
+	TIME = 0
+	STARTI = 1
+	write (8, *) 'Loading file:',fname(1:18),' with time: ',TIME, ' and frame: ', STARTI
+	call calc_OBJPOT
+end subroutine
+
+subroutine load_mult_phase()
+	use params
+	implicit none
+	integer :: i,j,t
+	double precision :: x, y, real, imag, pot
+	character(2048) :: tmp,fname
+	fname = './0000.soliton.0000'
+	open (999, FILE = fname)
+	do i = -NX/2, NX/2
+		do j = -NY/2, NY/2
+			read (999,"(2f16.8,3ES26.10E3)") x, y, real, imag, pot
+			GRID(i,j) = GRID(i,j)*EXP(EYE*ATAN2(imag,real))
+		end do
+		read (999,"(a)") tmp
+	end do
+	close(999)
+end subroutine
+
 
 !Approx - homogeneous!
 subroutine approx

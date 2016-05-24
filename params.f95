@@ -27,7 +27,7 @@ module params
   integer :: BCY = 0
 
   !Noise Amplitude - 0.001d0 works well
-  integer :: noiseamp = 0.000d0
+  double precision :: noiseamp = 0.000d0
 
   !Flow Speed in X Dir - Start End Stride
   integer :: VOBS = 0, VOBE = 0, VOBST = 1
