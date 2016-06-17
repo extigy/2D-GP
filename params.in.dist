@@ -1,8 +1,19 @@
 !Enter custom parameters in the form
 !PARAMETER_NAME = VALUE
 !
-NX = 128
-NY = 128
+NX = 250
+NY = 250
 BCX = 1
 BCY = 1
+NSTEPS=10000
+ISTEPS=500
 
+DSPACE = 0.2d0
+DTSIZE = 0.01d0
+RHSType = 0
+dumpd = huge(1)
+dumpwf = 100
+dumputil = 100
+
+enablePot = .false.
+enableTrap = .false.
