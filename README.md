@@ -229,20 +229,6 @@ Parameter | Default | Explanation
 `WF`|`0.1`|Frequency of forced oscillation
 `W0`|`0.05`| Obstacle's [natural frequency](http://en.wikipedia.org/wiki/Natural_frequency).
 
-###Surface Potential
-**TODO: Expand this section.**  
-*N.B. The surface code is NOT user friendly at the moment and needs updating so that general data can be used.*
-
-Parameter | Default | Explanation
---- | --- | ---
-`afm_filename`|` `| Location of the AFM data
-`afmRES`| `256` | Resolution of the AFM data
-`afmSlice` | `120` | Which slice (y value) to use
-`xi1` | `0.066`| Value of \xi to use (for converting metres to dimless units)
-`afmXScale`|`0.035`| Scale the data in the *x* direction by this value
-`afmYscale`|`1`| Scale the data in the *y* direction by this value
-`TRUNCPARAM` | `1`| Truncate the data at this amount (in units of the maximum point)
-
 ###Bitmap Sourced Potential
 2D-GP supports the loading of bitmap images which can then be used to define a potential. To use this feature first create a grayscale bitmap of size (`NX`+1) by (`NY`+1). White areas correspond to areas where the potential will be high, while black areas correspond to areas where the potential will be 0. Grayscale colours will cause the potential to scale between 0 and `OBJHEIGHT`.
 
@@ -263,4 +249,4 @@ BCX = 1
 BCY = 1
 ```
 
-This should show you enough to work out how to use the parameters shown throught this document.
+This should show you enough to work out how to use the parameters shown throughout this document.
