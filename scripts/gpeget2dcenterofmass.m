@@ -1,4 +1,4 @@
-function [comx,comy] = gpegetcenterofmass(dens,gridx,gridy)
+function [comx,comy] = gpeget2dcenterofmass(dens,gridx,gridy)
     dims = size(dens);
     for yy=1:(dims(2))
     for xx=1:(dims(1))

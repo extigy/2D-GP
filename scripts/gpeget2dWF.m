@@ -18,7 +18,6 @@ psi = A(3,:) + 1i*A(4,:);
 psi = reshape(psi,(ny+1),(nx+1));
 dens = psi.*conj(psi);
 phase = atan2(imag(psi),real(psi));
-%phase = 2*atan(imag(psi)./sqrt(real(psi).*real(psi) + imag(psi).*imag(psi))+real(psi));
 potential = reshape(A(5,:),(ny+1),(nx+1));
 
 fclose('all');

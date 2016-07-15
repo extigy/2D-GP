@@ -4,3 +4,4 @@ makemovie.sh
 tmp*
 *~
 */*~
+scripts/misc

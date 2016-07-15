@@ -2,9 +2,6 @@ function track_points_all = gpe2dplottracks(tracks,adjacency_tracks, points)
 
 n_tracks = numel(tracks);
 
-%for i = 1:length(points);
-%    points{i} = [points{i},repmat(i,length(points{i}),1)];
-%end
 all_points = vertcat(points{:});
 track_points_all = cell(2,1);
 ci = 1;

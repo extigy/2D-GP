@@ -1,4 +1,4 @@
-function [E,P] = gpeget2dBGEnergyMomentum(gridx,gridy,inpsi)
+function [E,P] = gpeget2denergymomentum(gridx,gridy,inpsi)
 dx=gridx(2)-gridx(1);
 [FX, FY] = gradient(inpsi,dx,dx);
 [FXS, FYS] = gradient(conj(inpsi),dx,dx);

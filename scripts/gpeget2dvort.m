@@ -4,13 +4,13 @@ function [xlocs,ylocs,pol] = gpeget2dvort(dens,ophase,gridx,gridy,potential)
     gf = 1.0; %Gaussian filter width. Smooths out noise.
     disp(['Using gaussian filter of width ',num2str(gf),'.']);
 
-    li = 2; %Line integral size. Set around the number of grid points in a vortex core radius
+    li = 4; %Line integral size. Set around the number of grid points in a vortex core radius
     disp(['Doing line integrals over ',num2str(li),' points.']);
 
-    th = 2; %threshold value. This can be freely tweaked as a way to control "sensitivity".
+    th = 1; %threshold value. This can be freely tweaked as a way to control "sensitivity".
     disp(['Using a threshold value of ',num2str(th),'.']);
     
-    scale = 1.0;
+    scale = 0.5;
     dens = imresize(dens,scale, 'nearest');
     ophase = imresize(ophase,scale, 'nearest');
     potential = imresize(potential,scale, 'nearest');
@@ -54,7 +54,13 @@ function [xlocs,ylocs,pol] = gpeget2dvort(dens,ophase,gridx,gridy,potential)
     parfor i = li:xxx-li
         for j = li:yyy-li
               presort(i,j)=lineint(velx,vely,i-li/2,i+li/2,j-li/2,j+li/2);
-              if(potential(i,j) > 0.9)
+              %if(potential(i,j) > 0.9)
+              %    presort(i,j) = 0;
+              %end
+              ii = i - 256;
+              jj = j - 256;
+              
+              if (sqrt(ii*ii+jj*jj) > 130)
                   presort(i,j) = 0;
               end
         end
@@ -81,8 +87,8 @@ function [xlocs,ylocs,pol] = gpeget2dvort(dens,ophase,gridx,gridy,potential)
             pol = [pol,-1];
         end
     end
-%      h=figure();
-%     imagesc(gridx,gridy,presort);
+      h=figure();
+     imagesc(gridx,gridy,presort);
 %      imagesc(gridx,gridy,dens);
 %      colormap(gray);
 %      axis image;

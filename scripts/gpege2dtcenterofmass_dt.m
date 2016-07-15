@@ -1,4 +1,4 @@
-function [comx,comy] = gpegetcenterofmass_dt(dirarg,startno,endno,speed,nx,ny)
+function [comx,comy] = gpege2dtcenterofmass_dt(dirarg,startno,endno,speed,nx,ny)
 for i=startno:1:endno
     [gridx,gridy,dens,phase,potential] = gpeget2dWF(dirarg,i,speed,nx,ny);
     fprintf('read %d\n',i);
