@@ -5,11 +5,11 @@ n_tracks = numel(tracks);
 all_points = vertcat(points{:});
 track_points_all = cell(2,1);
 ci = 1;
-cc=jet(4);
+cc=jet(n_tracks);
 for i_track = 1 : n_tracks
     track = adjacency_tracks{i_track};
     track_points = all_points(track, :);
-    if(length(track_points(:,1)) > 1250)
+    if(length(track_points(:,1)) > 5)
         plot(track_points(:,1)',track_points(:,2)','LineWidth',2,'color',cc(ci,:));
         track_points_all{1,ci} = track_points(:,1)';
         track_points_all{2,ci} = track_points(:,2)';
