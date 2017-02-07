@@ -1,47 +1,90 @@
 function [xlocs,ylocs,pol] = gpeget2dvort(psi,gridx,gridy,pot,shouldplot)
     disp(['Grid spacing is ',num2str(gridx(2)-gridx(1)),'.']);
-
-    th = 0.2; %threshold value. This can be freely tweaked as a way to control "sensitivity".
-    disp(['Using a threshold value of ',num2str(th),'.']);
+    dims = size(psi);
+    dy = gridy(2)-gridy(1);
+    gf = 2;
+    disp(['Using gaussian filter of width ',num2str(gf),'.']);
     
+    h = fspecial('gaussian', dims, gf);
+    psiflt = imfilter(psi, h,'circular');
+    phaseflt = angle(psiflt);
+
     xlocs=[];
     ylocs=[];
     pol=[];
-    
-    disp('Getting pseudo-vorticity.');
-    pv = gpe2dpseudovorticity(gridx,gridy,psi);
-    pv(pot>0.1) = 0.0; %ignore areas where potential is high[x
-    
-    dspace=(gridx(2)-gridx(1));
-    disp('Splitting by polarity.');
-    negareas = bwlabel(pv<-th);
-    posareas = bwlabel(pv>th);
-    
-    disp('Finding +ve vortices...');
+
+    for i = 1:dims(2)
+        for j = 1:dims(1)
+            t1 = anglediff(phaseflt(mod(i+1-1,dims(2))+1,j),phaseflt(mod(i-1-1,dims(2))+1,j));
+            vely(i,j) = real(t1)/(2*dy);
+        end
+    end
+
+    for i = 1:dims(2)
+        for j = 1:dims(1)
+            t1 = anglediff(phaseflt(i,mod(j+1-1,dims(1))+1),phaseflt(i,mod(j-1-1,dims(1))+1));
+            velx(i,j) = real(t1)/(2*dy);
+        end
+    end
+
+    for i = 1:dims(2)
+        for j = 1:dims(1)
+            presort(i,j)=LINEINTVF(vely,velx,dy,i-1,i+1,j-1,j+1,dims(2),dims(1));
+            if(pot(i,j)>80.0)
+                presort(i,j) = 0;
+            end
+        end
+    end
+
+    negareas = bwlabel(presort<-6.2); %just under 2pi
+    posareas = bwlabel(presort>6.2);
+
+    %periodicity. find areas where connected component is over a
+    %boundary and choose one
+    r = find(posareas(1,1:dims(1))~=0 & posareas(dims(2),1:dims(1))~=0);
+    if(~isempty(r))
+        posareas(posareas==posareas(1,r(1))) = 0;
+    end
+
+    r = find(posareas(1:dims(2),1)~=0 & posareas(1:dims(2),dims(1))~=0);
+    if(~isempty(r))
+        posareas(posareas==posareas(r(1),1)) = 0;
+    end
+
+    r = find(negareas(1,1:dims(1))~=0 & negareas(dims(2),1:dims(1))~=0);
+    if(~isempty(r))
+        negareas(negareas==negareas(1,r(1))) = 0;
+    end
+
+    r = find(negareas(1:dims(2),1)~=0 & negareas(1:dims(2),dims(1))~=0);
+    if(~isempty(r))
+        negareas(negareas==negareas(r(1),1)) = 0;
+    end
+
     for i = 1:max(max(posareas))
         [r,c] = find(posareas== i);
-        if(length(r) > 1)
+        if(~isempty(r))
             xlocs = [xlocs,mean(gridx(c))];
             ylocs = [ylocs,mean(gridy(r))];
             pol = [pol,1];
         end
     end
-    
-    disp('Finding -ve vortices...');
     for i = 1:max(max(negareas))
         [r,c] = find(negareas== i);
-        if(length(r) > 1)
+        if(~isempty(r))
             xlocs = [xlocs,mean(gridx(c))];
             ylocs = [ylocs,mean(gridy(r))];
             pol = [pol,-1];
         end
-    end
+    end 
+            
+            
     if(shouldplot == 1)
         disp('Plotting...');
         figure();
-        imagesc(gridx,gridy,pv);
+        imagesc(gridx,gridy,presort);
         h=figure();
-        imagesc(gridx,gridy,abs(psi).^2);
+        imagesc(gridx,gridy,abs(psiflt).^2);
         colormap(gray);
         axis image;
         axis xy;
@@ -69,4 +112,33 @@ function [xlocs,ylocs,pol] = gpeget2dvort(psi,gridx,gridy,pot,shouldplot)
         set(ax,'FontSize',16)
     end
     disp('Done!');
+end
+
+function ret = LINEINTVF(fieldx,fieldy,dy,x,ex,y,ey,ii,jj)
+    l1=0;
+    l2=0;
+    l3=0;
+    l4=0;
+    for t = y:ey
+        l1 = l1 + dy*fieldy(mod(x-1,ii)+1,mod(t-1,jj)+1);
+    end
+    for t = x:ex
+        l2 = l2 + dy*fieldx(mod(t-1,ii)+1,mod(y-1,jj)+1);
+    end
+    for t = y:ey
+        l3 = l3 + dy*fieldy(mod(ex-1,ii)+1,mod(t-1,jj)+1);
+    end
+    for t = x:ex
+        l4 = l4 + dy*fieldx(mod(t-1,ii)+1,mod(ey-1,jj)+1);
+    end
+    ret = -l2-l3+l4+l1;
+end
+
+function d = anglediff(th1, th2)
+    if nargin < 2
+        d = th1;
+    else
+        d = th1 - th2;
+    end
+    d = mod(d+pi, 2*pi) - pi;
 end

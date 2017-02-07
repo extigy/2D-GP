@@ -5,8 +5,8 @@ FX = 0;
 FY = 0;
 dirarg = regexprep(dirarg, '/$', '');
 
-datalocation = strcat(dirarg, '/%04d.dumpwf.%04d');
-%datalocation = strcat(dirarg, '/%dplotwf.%04d');
+%datalocation = strcat(dirarg, '/%04d.dumpwf.%04d');
+datalocation = strcat(dirarg, '/%dplotwf.%04d');
 fname = sprintf(datalocation,speed,startno);
 densn = fopen(fname);
 A = fscanf(densn, '%g %g %g %g %g\n', [5 inf]);
