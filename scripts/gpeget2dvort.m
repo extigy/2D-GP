@@ -13,23 +13,23 @@ function [xlocs,ylocs,pol] = gpeget2dvort(psi,gridx,gridy,pot,shouldplot)
     ylocs=[];
     pol=[];
 
-    for i = 1:dims(2)
-        for j = 1:dims(1)
-            t1 = anglediff(phaseflt(mod(i+1-1,dims(2))+1,j),phaseflt(mod(i-1-1,dims(2))+1,j));
+    for i = 1:dims(1)
+        for j = 1:dims(2)
+            t1 = anglediff(phaseflt(mod(i+1-1,dims(1))+1,j),phaseflt(mod(i-1-1,dims(1))+1,j));
             vely(i,j) = real(t1)/(2*dy);
         end
     end
 
-    for i = 1:dims(2)
-        for j = 1:dims(1)
-            t1 = anglediff(phaseflt(i,mod(j+1-1,dims(1))+1),phaseflt(i,mod(j-1-1,dims(1))+1));
+    for i = 1:dims(1)
+        for j = 1:dims(2)
+            t1 = anglediff(phaseflt(i,mod(j+1-1,dims(2))+1),phaseflt(i,mod(j-1-1,dims(2))+1));
             velx(i,j) = real(t1)/(2*dy);
         end
     end
 
-    for i = 1:dims(2)
-        for j = 1:dims(1)
-            presort(i,j)=LINEINTVF(vely,velx,dy,i-1,i+1,j-1,j+1,dims(2),dims(1));
+    for i = 1:dims(1)
+        for j = 1:dims(2)
+            presort(i,j)=LINEINTVF(vely,velx,dy,i-1,i+1,j-1,j+1,dims(1),dims(2));
             if(pot(i,j)>80.0)
                 presort(i,j) = 0;
             end
@@ -41,22 +41,22 @@ function [xlocs,ylocs,pol] = gpeget2dvort(psi,gridx,gridy,pot,shouldplot)
 
     %periodicity. find areas where connected component is over a
     %boundary and choose one
-    r = find(posareas(1,1:dims(1))~=0 & posareas(dims(2),1:dims(1))~=0);
+    r = find(posareas(1,1:dims(2))~=0 & posareas(dims(1),1:dims(2))~=0);
     if(~isempty(r))
         posareas(posareas==posareas(1,r(1))) = 0;
     end
 
-    r = find(posareas(1:dims(2),1)~=0 & posareas(1:dims(2),dims(1))~=0);
+    r = find(posareas(1:dims(1),1)~=0 & posareas(1:dims(1),dims(2))~=0);
     if(~isempty(r))
         posareas(posareas==posareas(r(1),1)) = 0;
     end
 
-    r = find(negareas(1,1:dims(1))~=0 & negareas(dims(2),1:dims(1))~=0);
+    r = find(negareas(1,1:dims(2))~=0 & negareas(dims(1),1:dims(2))~=0);
     if(~isempty(r))
         negareas(negareas==negareas(1,r(1))) = 0;
     end
 
-    r = find(negareas(1:dims(2),1)~=0 & negareas(1:dims(2),dims(1))~=0);
+    r = find(negareas(1:dims(1),1)~=0 & negareas(1:dims(1),dims(2))~=0);
     if(~isempty(r))
         negareas(negareas==negareas(r(1),1)) = 0;
     end
