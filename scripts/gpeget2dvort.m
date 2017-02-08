@@ -33,7 +33,7 @@ function [xlocs,ylocs,pol] = gpeget2dvort(psi,gridx,gridy,varargin)
         psi = imfilter(psi, h,'circular');
         phase = angle(psi);
     elseif p.Results.filtersize == 0
-        log(['Gaussian filter disabled.'], p.Results.verbose);
+        log('Gaussian filter disabled.', p.Results.verbose);
         phase = angle(psi);
     else
         error('Invalid filter size.');
@@ -94,7 +94,7 @@ function [xlocs,ylocs,pol] = gpeget2dvort(psi,gridx,gridy,varargin)
     presort=l4-l2+l1-l3;
     presort(p.Results.potential>p.Results.potentialheight)=0;
     
-    %Sort vort field
+    %label vort field
     negareas = bwlabel(presort<-6.2); %just under 2pi
     posareas = bwlabel(presort>6.2);
 
@@ -132,7 +132,7 @@ function [xlocs,ylocs,pol] = gpeget2dvort(psi,gridx,gridy,varargin)
     ylocs = (ylocs-1)*dy + gridy(1);
     
     if(p.Results.plot == 1)
-        disp('Plotting...');
+        log('Plotting...',p.Results.verbose);
         h=figure();
         imagesc(gridx,gridy,abs(psi).^2);
         colormap(gray);
