@@ -18,6 +18,7 @@ function [xlocs,ylocs,pol] = gpeget2dvort(psi,gridx,gridy,varargin)
     addParameter(p,'potential',zeros(dims));
     addParameter(p,'potentialheight',10);
     addParameter(p,'plot',0);
+    addParameter(p,'plotphase',0);
     addParameter(p,'boundary','periodic');
     addParameter(p,'filtersize',0);
     addParameter(p,'verbose',0);
@@ -131,28 +132,45 @@ function [xlocs,ylocs,pol] = gpeget2dvort(psi,gridx,gridy,varargin)
     xlocs = (xlocs-1)*dx + gridx(1); 
     ylocs = (ylocs-1)*dy + gridy(1);
     
+    pos='r';
+    neg='b';
+    ptsize=5;
+    
     if(p.Results.plot == 1)
         log('Plotting...',p.Results.verbose);
+        phase=phase(2:end-1,2:end-1); %drop boundaries
         h=figure();
-        imagesc(gridx,gridy,abs(psi).^2);
+        if(p.Results.plotphase == 1)
+            %Phase plot with brightness=density;
+            C = hsv;
+            L = size(C,1);
+            Gs = round(interp1(linspace(min(phase(:)),max(phase(:)),L),1:L,phase));
+            H = reshape(C(Gs,:),[size(Gs) 3]).*repmat(mat2gray(abs(psi).^2),[1,1,3]);
+            image(gridx,gridy,H);
+            pos='w';
+            neg='w';
+            ptsize = 8;
+        else
+            imagesc(gridx,gridy,abs(psi).^2);
+        end
         colormap(gray);
         axis image;
         axis xy;
         hold on;
-        g = gscatter(xlocs,ylocs,pol,['b','r'],['^','o'],5,'off');
+        g = gscatter(xlocs,ylocs,pol,['b','r'],['^','o'],ptsize,'off');
         if(length(g)==1 && pol(1)==1)
-            set(g(1), 'MarkerFaceColor', 'r')
+            set(g(1), 'MarkerFaceColor', pos)
             set(g(1),'Marker','o');
             set(g(1),'MarkerEdgeColor','none');
         elseif(length(g)==1 && pol(1)==-1)
-            set(g(1), 'MarkerFaceColor', 'b')
+            set(g(1), 'MarkerFaceColor', neg)
             set(g(1),'Marker','^');
             set(g(1),'MarkerEdgeColor','none');
         else
             set(g(1),'MarkerEdgeColor','none');
-            set(g(1), 'MarkerFaceColor', 'b')
+            set(g(1), 'MarkerFaceColor', neg)
             set(g(2),'MarkerEdgeColor','none');
-            set(g(2), 'MarkerFaceColor', 'r')
+            set(g(2), 'MarkerFaceColor', pos)
         end
         xlabel('x', 'FontSize',16);
         ylabel('y', 'FontSize',16);
