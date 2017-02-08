@@ -5,7 +5,7 @@ neg = [];
     for i=startno:stride:endno
         [gridx,gridy,psi,pot] = gpeget2dPSI(dirarg,i,speed,nx,ny);
         fprintf('read %d\n',i);
-        [xlocs,ylocs,pol] = gpeget2dvort(psi,gridx,gridy,pot,0);
+        [xlocs,ylocs,pol] = gpeget2dvort(psi,gridx,gridy,'potential',pot);
         j = (i+(stride-startno))/stride;
         total(j) = length(pol);
         neg(j) = -sum(pol-1)/2;

@@ -3,9 +3,9 @@ function gpe2dmakemovie(dirarg,startno,stride,endno,speed,nx,ny)
     pngfolder = strcat(dirarg, '/png');
     mkdir(pngfolder);
     for i=startno:stride:endno
-        clf;
-        [gridx,gridy,dens,phase,potential] = gpeget2dWF2(dirarg,i,speed,nx,ny);
-        [xlocs,ylocs,pol] = gpeget2dvort(dens,phase,gridx,gridy,potential);
+        [gridx,gridy,psi,potential] = gpeget2dPSI(dirarg,i,speed,nx,ny);
+        [xlocs,ylocs,pol] = gpeget2dvort(psi,gridx,gridy,potential,0);
+        dens = abs(psi).^2;
         fprintf('read %d\n',i);
         j = i/stride;
         h=figure('visible','off');

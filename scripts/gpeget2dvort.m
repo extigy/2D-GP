@@ -1,90 +1,140 @@
-function [xlocs,ylocs,pol] = gpeget2dvort(psi,gridx,gridy,pot,shouldplot)
-    disp(['Grid spacing is ',num2str(gridx(2)-gridx(1)),'.']);
-    dims = size(psi);
+%%THE 2D VORTEX CODE%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%MIT Licence 2013-2017
+%CONTRIBUTORS
+%    Original implementation & current maintainer: G.Stagg
+%    Bug reports & testing: P.Comaron, M.Mesgarnezhad
+%    Performance improvements: E.Rickinson
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function [xlocs,ylocs,pol] = gpeget2dvort(psi,gridx,gridy,varargin)
+    dx = gridx(2)-gridx(1);
     dy = gridy(2)-gridy(1);
-    gf = 2;
-    disp(['Using gaussian filter of width ',num2str(gf),'.']);
+    dims = size(psi);
     
-    h = fspecial('gaussian', dims, gf);
-    psiflt = imfilter(psi, h,'circular');
-    phaseflt = angle(psiflt);
-
-    xlocs=[];
-    ylocs=[];
-    pol=[];
-
-    for i = 1:dims(1)
-        for j = 1:dims(2)
-            t1 = anglediff(phaseflt(mod(i+1-1,dims(1))+1,j),phaseflt(mod(i-1-1,dims(1))+1,j));
-            vely(i,j) = real(t1)/(2*dy);
-        end
+    %parse function arguments
+    p = inputParser;
+    addRequired(p,'psi');
+    addRequired(p,'gridx');
+    addRequired(p,'gridy');
+    addParameter(p,'potential',zeros(dims));
+    addParameter(p,'potentialheight',10);
+    addParameter(p,'plot',0);
+    addParameter(p,'boundary','periodic');
+    addParameter(p,'filtersize',0);
+    addParameter(p,'verbose',0);
+    parse(p,psi,gridx,gridy,varargin{:});
+    
+    log(['Grid spacing is ',num2str(dx),',',num2str(dy),'.'], p.Results.verbose);
+    log(['Box size is ',num2str(dims(2)),',',num2str(dims(1)),'.'], p.Results.verbose);
+    
+    %Gaussian Filter
+    if p.Results.filtersize > 0
+        log(['Using gaussian filter of width ',num2str(p.Results.filtersize),'.'], p.Results.verbose);
+        h = fspecial('gaussian', dims, p.Results.filtersize);
+        psi = imfilter(psi, h,'circular');
+        phase = angle(psi);
+    elseif p.Results.filtersize == 0
+        log(['Gaussian filter disabled.'], p.Results.verbose);
+        phase = angle(psi);
+    else
+        error('Invalid filter size.');
     end
-
-    for i = 1:dims(1)
-        for j = 1:dims(2)
-            t1 = anglediff(phaseflt(i,mod(j+1-1,dims(2))+1),phaseflt(i,mod(j-1-1,dims(2))+1));
-            velx(i,j) = real(t1)/(2*dy);
-        end
+    
+    %Boundary conditions
+    if strcmp(p.Results.boundary,'periodic')
+        phase=[phase(end,end),phase(end,:),phase(end,1); ...
+            phase(:,end),phase,phase(:,1); ...
+            phase(1,end),phase(1,:),phase(1,1)];
+    elseif strcmp(p.Results.boundary,'zero')
+        phase=[zeros([1 dims(2)+2]); ...
+            [zeros([dims(1),1]),phase,zeros([dims(1) 1])]; ...
+            zeros([1 dims(2)+2])];
+    elseif strcmp(p.Results.boundary,'reflective')
+        phase=[phase(1,1),phase(1,:),phase(1,end); ...
+            phase(:,1),phase,phase(:,end); ...
+            phase(end,1),phase(end,:),phase(end,end)];
+    else
+        error('Invalid boundary condition.');
     end
-
-    for i = 1:dims(1)
-        for j = 1:dims(2)
-            presort(i,j)=LINEINTVF(vely,velx,dy,i-1,i+1,j-1,j+1,dims(1),dims(2));
-            if(pot(i,j)>80.0)
-                presort(i,j) = 0;
-            end
-        end
+    
+    %gradient(phase) with finite differences
+    velx=real(mod(phase(2:end-1,3:end)-phase(2:end-1,1:end-2)+pi,2*pi)-pi)/2;
+    vely=real(mod(phase(3:end,2:end-1)-phase(1:end-2,2:end-1)+pi,2*pi)-pi)/2;
+    
+    %More boundary conditions
+    if strcmp(p.Results.boundary,'periodic')
+        velx=[velx(end,end),velx(end,:),velx(end,1); ...
+            velx(:,end),velx,velx(:,1); ...
+            velx(1,end),velx(1,:),velx(1,1)];
+        vely=[vely(end,end),vely(end,:),vely(end,1); ...
+            vely(:,end),vely,vely(:,1); ...
+            vely(1,end),vely(1,:),vely(1,1)];
+    elseif strcmp(p.Results.boundary,'zero')
+        velx=[zeros([1 dims(2)+2]); ...
+            [zeros([dims(1),1]),velx,zeros([dims(1) 1])]; ...
+            zeros([1 dims(2)+2])];
+        vely=[zeros([1 dims(2)+2]); ...
+            [zeros([dims(1),1]),vely,zeros([dims(1) 1])]; ...
+            zeros([1 dims(2)+2])];
+    elseif strcmp(p.Results.boundary,'reflective')
+        velx=[velx(1,1),velx(1,:),velx(1,end); ...
+            velx(:,1),velx,velx(:,end); ...
+            velx(end,1),velx(end,:),velx(end,end)];
+        vely=[vely(1,1),vely(1,:),vely(1,end); ...
+            vely(:,1),vely,vely(:,end); ...
+            vely(end,1),vely(end,:),vely(end,end)];
+    else
+        error('Invalid boundary condition.');
     end
-
+    
+    %Get vortex field using line integrals
+    l1=(velx(1:end-2,1:end-2)+velx(1:end-2,2:end-1)+velx(1:end-2,3:end));
+    l2=(vely(1:end-2,1:end-2)+vely(2:end-1,1:end-2)+vely(3:end,1:end-2));
+    l3=(velx(3:end,1:end-2)+velx(3:end,2:end-1)+velx(3:end,3:end));
+    l4=(vely(1:end-2,3:end)+vely(2:end-1,3:end)+vely(3:end,3:end));
+    presort=l4-l2+l1-l3;
+    presort(p.Results.potential>p.Results.potentialheight)=0;
+    
+    %Sort vort field
     negareas = bwlabel(presort<-6.2); %just under 2pi
     posareas = bwlabel(presort>6.2);
 
-    %periodicity. find areas where connected component is over a
-    %boundary and choose one
-    r = find(posareas(1,1:dims(2))~=0 & posareas(dims(1),1:dims(2))~=0);
-    if(~isempty(r))
-        posareas(posareas==posareas(1,r(1))) = 0;
-    end
+    %If bwlabel straddles a boundary pick a side and remove one of the labels.
+    posareas(1,posareas(1,1:dims(2))~=0 & posareas(dims(1),1:dims(2))~=0) = 0;
+    posareas(posareas(1:dims(1),1)~=0 & posareas(1:dims(1),dims(2))~=0,1) = 0;
+    negareas(1,negareas(1,1:dims(2))~=0 & negareas(dims(1),1:dims(2))~=0) = 0;
+    negareas(negareas(1:dims(1),1)~=0 & negareas(1:dims(1),dims(2))~=0,1) = 0;   
 
-    r = find(posareas(1:dims(1),1)~=0 & posareas(1:dims(1),dims(2))~=0);
-    if(~isempty(r))
-        posareas(posareas==posareas(r(1),1)) = 0;
+    %Get vortex centres
+    xylocs = regionprops(posareas,'centroid');
+    xylocs = cat(1,xylocs.Centroid);
+    if sum(size(xylocs))>0
+        xlocs = xylocs(:,1);
+        ylocs = xylocs(:,2);
+        pol = ones([length(xlocs),1]);
+    else
+        xlocs = [];
+        ylocs = [];
+        pol = [];
     end
-
-    r = find(negareas(1,1:dims(2))~=0 & negareas(dims(1),1:dims(2))~=0);
-    if(~isempty(r))
-        negareas(negareas==negareas(1,r(1))) = 0;
+    xylocs = regionprops(negareas,'centroid');
+    xylocs = cat(1,xylocs.Centroid);
+    if sum(size(xylocs))>0
+        xlocs = [xlocs;xylocs(:,1)];
+        ylocs = [ylocs;xylocs(:,2)];
+        pol = [pol;repmat(-1,[length(xylocs(:,1)),1])];
     end
-
-    r = find(negareas(1:dims(1),1)~=0 & negareas(1:dims(1),dims(2))~=0);
-    if(~isempty(r))
-        negareas(negareas==negareas(r(1),1)) = 0;
-    end
-
-    for i = 1:max(max(posareas))
-        [r,c] = find(posareas== i);
-        if(~isempty(r))
-            xlocs = [xlocs,mean(gridx(c))];
-            ylocs = [ylocs,mean(gridy(r))];
-            pol = [pol,1];
-        end
-    end
-    for i = 1:max(max(negareas))
-        [r,c] = find(negareas== i);
-        if(~isempty(r))
-            xlocs = [xlocs,mean(gridx(c))];
-            ylocs = [ylocs,mean(gridy(r))];
-            pol = [pol,-1];
-        end
-    end 
-            
-            
-    if(shouldplot == 1)
+    %rm NaNs
+    pol(isnan(xlocs))=[];
+    xlocs(isnan(xlocs))=[];
+    ylocs(isnan(ylocs))=[];
+    %shift to grid
+    xlocs = (xlocs-1)*dx + gridx(1); 
+    ylocs = (ylocs-1)*dy + gridy(1);
+    
+    if(p.Results.plot == 1)
         disp('Plotting...');
-        figure();
-        imagesc(gridx,gridy,presort);
         h=figure();
-        imagesc(gridx,gridy,abs(psiflt).^2);
+        imagesc(gridx,gridy,abs(psi).^2);
         colormap(gray);
         axis image;
         axis xy;
@@ -94,13 +144,11 @@ function [xlocs,ylocs,pol] = gpeget2dvort(psi,gridx,gridy,pot,shouldplot)
             set(g(1), 'MarkerFaceColor', 'r')
             set(g(1),'Marker','o');
             set(g(1),'MarkerEdgeColor','none');
-        end
-        if(length(g)==1 && pol(1)==-1)
+        elseif(length(g)==1 && pol(1)==-1)
             set(g(1), 'MarkerFaceColor', 'b')
             set(g(1),'Marker','^');
             set(g(1),'MarkerEdgeColor','none');
-        end
-        if(length(g)>1)
+        else
             set(g(1),'MarkerEdgeColor','none');
             set(g(1), 'MarkerFaceColor', 'b')
             set(g(2),'MarkerEdgeColor','none');
@@ -111,34 +159,11 @@ function [xlocs,ylocs,pol] = gpeget2dvort(psi,gridx,gridy,pot,shouldplot)
         ax = findobj(h,'type','axes','Tag','');
         set(ax,'FontSize',16)
     end
-    disp('Done!');
+    log('Done!',p.Results.verbose);
 end
 
-function ret = LINEINTVF(fieldx,fieldy,dy,x,ex,y,ey,ii,jj)
-    l1=0;
-    l2=0;
-    l3=0;
-    l4=0;
-    for t = y:ey
-        l1 = l1 + dy*fieldy(mod(x-1,ii)+1,mod(t-1,jj)+1);
+function log(obj,verbose)
+    if verbose > 0
+        disp(obj);
     end
-    for t = x:ex
-        l2 = l2 + dy*fieldx(mod(t-1,ii)+1,mod(y-1,jj)+1);
-    end
-    for t = y:ey
-        l3 = l3 + dy*fieldy(mod(ex-1,ii)+1,mod(t-1,jj)+1);
-    end
-    for t = x:ex
-        l4 = l4 + dy*fieldx(mod(t-1,ii)+1,mod(ey-1,jj)+1);
-    end
-    ret = -l2-l3+l4+l1;
-end
-
-function d = anglediff(th1, th2)
-    if nargin < 2
-        d = th1;
-    else
-        d = th1 - th2;
-    end
-    d = mod(d+pi, 2*pi) - pi;
 end
