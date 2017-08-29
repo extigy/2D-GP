@@ -1,13 +1,15 @@
 subroutine runit(steps,rt,plot)
 	use params
+	use output
 	implicit none
 	integer :: steps,rt,i,ii,ji,plot,isvorts
 	if (plot == 1) then
-		call dump_wavefunction(0) !dump initial condition
+		call dump_wavefunction_ncdf(0) !dump initial condition
 	end if
 	do i = STARTI, steps	
 		call iterate(rt)
-		if(rt == 2) then !its vortex imprinting
+
+		if(rt == 2) then !it's vortex imprinting
 			if(HOLDICV == 1 .and. modulo(i,10) == 9) then
 				GRID = sqrt(GRID*conjg(GRID))
 				include 'ic.in'
@@ -29,11 +31,6 @@ subroutine runit(steps,rt,plot)
 			end if
 			close(10)
 		end if
-		if (modulo(i,dumpd) == 0) then
-			if (plot == 1) then
-				call dump_density(i)
-			end if
-		end if
 
 		if (modulo(i,vortexKillFreq) == 0) then
 			if (plot == 1) then
@@ -43,12 +40,14 @@ subroutine runit(steps,rt,plot)
 
 		if (modulo(i,dumpwf) == 0) then
 			if (plot == 1) then
-				call dump_wavefunction(i)
+				call dump_wavefunction_ncdf(i)
 			end if
 		end if
+
 		if(potRep .eq. 1 .and. rt == 1) then
 			call calc_OBJPOT
 		end if
+
 		if(i .eq. killgamma) then
 			write(6,*) "Killing gamma on iteration", i
 			GAMMAC = 0.0d0
@@ -57,19 +56,13 @@ subroutine runit(steps,rt,plot)
 end subroutine
 
 !Runge-Kutta 4th Order!
-
 subroutine iterate (rt)
 	use params
 
 	implicit none
 	integer :: rt,BC
 	complex*16, dimension(-NX/2:NX/2,-NY/2:NY/2) :: k1,k2,k3,k4
-	double precision :: energy,mu
-
-	!if (rt .ne. 1) then
-		!call calc_mu(mu)
-		!write(6,*) mu
-	!end if
+	double precision :: energy
 
 	call rhs(GRID, k1,rt)
 	call rhs(GRID + 0.5d0*DT*k1,k2,rt)
@@ -77,7 +70,7 @@ subroutine iterate (rt)
 	call rhs(GRID + DT*k3,k4,rt)
 	GRID = GRID + DT*(k1 + 2.0d0*k2 + 2.0d0*k3 + k4)/6.0d0
 
-	if (rt .ne. 1 .or. rtNorm) then
+	if ((rt .eq. 0) .or. (rt .eq. 2) .or. (rtNorm .and. (rt .eq. 1))) then
 		if (RHSType .eq. 0) then
 			call calc_norm
 			GRID = GRID/sqrt(NORM)
@@ -91,13 +84,13 @@ subroutine iterate (rt)
 end subroutine
 !!!!!!!!!!!!!!!!!!!!!!!
 
-!Homogeneous Dimentionless - With Ramping!
+!Homogeneous Dimensionless - With Ramping!
 
 subroutine rhs (gt, kk,rt)
 	use params
-
 	implicit none
 	integer :: i,j,BC,rt
+	double precision :: r
 	complex*16, dimension(-NX/2:NX/2,-NY/2:NY/2) :: gt, kk
 	kk=0
 	if(RHSType .eq. 0) then
@@ -118,13 +111,13 @@ subroutine rhs (gt, kk,rt)
 		end do
 		!$OMP END PARALLEL DO
 	end if
-!Harmonic Dimentionless
+!Harmonic Dimensionless
 	if(RHSType .eq. 1) then
 		!$OMP PARALLEL DO
 		do i = -NX/2,NX/2
 			do j = -NY/2,NY/2
 				if(abs(i).eq.NX/2 .and. BCX.eq.2) gt(i,j) = 0.0d0
-                                if(abs(j).eq.NY/2 .and. BCY.eq.2) gt(i,j) = 0.0d0
+				if(abs(j).eq.NY/2 .and. BCY.eq.2) gt(i,j) = 0.0d0
 				kk(i,j) = 0.5d0*(4.0d0*gt(BC(i,0),BC(j,1))- gt(BC(i,0),BC(j+1,1))&
 						-gt(BC(i,0),BC(j-1,1))-gt(BC(i+1,0),BC(j,1))&
 						-gt(BC(i-1,0),BC(j,1)))/(DSPACE**2.0d0)&	!laplacian
@@ -141,9 +134,9 @@ subroutine rhs (gt, kk,rt)
 	end if
 	
 	if (rt == 1) then ! do we need to do damping?
-		if ((dampedX .eqv. .false.) .and. (dampedY .eqv. .false.)) then
+		if ((dampedX .eqv. .false.) .and. (dampedY .eqv. .false.) .and. (dampedR .eqv. .false.)) then
 			kk = kk/(EYE-GAMMAC)
-		else 
+		else if (dampedR .eqv. .false.) then
 			!regional damping
 			!$OMP PARALLEL DO
 			do i = -NX/2,NX/2
@@ -165,6 +158,18 @@ subroutine rhs (gt, kk,rt)
 				end do
 			end do
 			!$OMP END PARALLEL DO
+		else
+			!regional damping
+			do i = -NX/2,NX/2
+				do j = -NY/2,NY/2
+					r = SQRT((i*DSPACE)**2.0d0+(j*DSPACE)**2.0d0)
+					if (r > dampedRDist) then
+						kk(i,j) = kk(i,j)/(EYE-GAMMAC-0.5d0*dampedGamma*(1.0d0+tanh(pi*(-1.0d0+2.0d0*(r-dampedRDist)/dampedRWidth))))
+					else 
+						kk(i,j) = kk(i,j)/(EYE-GAMMAC)
+					end if
+				end do
+			end do
 
 		end if
 	else
@@ -173,7 +178,6 @@ subroutine rhs (gt, kk,rt)
 end subroutine
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 integer function BC(s,n)
 	use params
 	implicit none

@@ -1,19 +1,23 @@
 !Enter custom parameters in the form
 !PARAMETER_NAME = VALUE
 !
-NX = 250
-NY = 250
+NX = 256
+NY = 256
+NSTEPS=50000
+VSTEPS=0
+ISTEPS=10
+
+DSPACE = 0.1d0
+DTSIZE = 0.002d0
+
+RHSType = 1
+ROM = 0.6d0
 BCX = 1
 BCY = 1
-NSTEPS=10000
-ISTEPS=500
+harm_osc_C = 2000.0d0
+harm_osc_mu = 25.26698674d0
 
-DSPACE = 0.2d0
-DTSIZE = 0.01d0
-RHSType = 0
-dumpd = huge(1)
-dumpwf = 100
-dumputil = 100
-
-enablePot = .false.
-enableTrap = .false.
+enablePot = .true.
+enableTrap = .true.
+TXSCALE = 0.97d0
+GAMMAC = 0.1d0

@@ -1,10 +1,10 @@
-function gpe2dmakemovie(dirarg,startno,stride,endno,speed,nx,ny)
+function gpe2dmakemovie(dirarg,startno,stride,endno)
     dirarg = regexprep(dirarg, '/$', '');
     pngfolder = strcat(dirarg, '/png');
     mkdir(pngfolder);
     for i=startno:stride:endno
-        [gridx,gridy,psi,potential] = gpeget2dPSI(dirarg,i,speed,nx,ny);
-        [xlocs,ylocs,pol] = gpeget2dvort(psi,gridx,gridy,potential,0);
+        [gridx,gridy,psi,potential] = gpeget2dPSI(dirarg,i);
+        [xlocs,ylocs,pol] = gpeget2dvort(psi,gridx,gridy,'potential',potential);
         dens = abs(psi).^2;
         fprintf('read %d\n',i);
         j = i/stride;
@@ -27,7 +27,7 @@ function gpe2dmakemovie(dirarg,startno,stride,endno,speed,nx,ny)
             set(g(2), 'MarkerFaceColor', 'r')
         end
         axis off
-        filename = strcat(pngfolder, '/d%04d.png');
+        filename = strcat(pngfolder, '/d%06d.png');
         finalfname = sprintf(filename,round(j));
         print (h,'-dpng','-r150',finalfname);
         close(h);

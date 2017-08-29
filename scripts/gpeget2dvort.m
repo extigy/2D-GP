@@ -16,7 +16,7 @@ function [xlocs,ylocs,pol] = gpeget2dvort(psi,gridx,gridy,varargin)
     addRequired(p,'gridx');
     addRequired(p,'gridy');
     addParameter(p,'potential',zeros(dims));
-    addParameter(p,'potentialheight',10);
+    addParameter(p,'potentialheight',25);
     addParameter(p,'plot',0);
     addParameter(p,'plotphase',0);
     addParameter(p,'boundary','periodic');

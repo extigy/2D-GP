@@ -1,77 +1,3 @@
-subroutine dump_density (II)
-	use params
-	implicit none
-	integer :: II,i,j
-	character(len=80) fname
-	write(fname, '(i0.4,a,i0.4)') LOOPNO,'.dump.',II/dumpd
-	open (7, FILE = fname)
-	do i = -NX/2, NX/2
-		do j = -NY/2, NY/2
-			write (unit=7,fmt="(2f10.2, f20.16)")&
-				dble(i*DSPACE),dble(j*DSPACE),dble(GRID(i,j)*CONJG(GRID(i,j)))
-		end do
-		write (unit=7,fmt="(a)") " "
-	end do
-	close(7)
-end subroutine
-
-subroutine dump_wavefunction (II)
-	use params
-	implicit none
-	integer :: II,i,j
-	character(len=80) fname
-	write(fname, '(i0.4,a,i0.4)') LOOPNO,'.dumpwf.',II/dumpwf
-	open (7, FILE = fname)
-	do i = -NX/2, NX/2
-		do j = -NY/2, NY/2
-			write (unit=7,fmt="(2f16.8,3ES26.10E3)")&
-				dble(i*DSPACE),dble(j*DSPACE),dble(GRID(i,j)),&
-				aimag(GRID(i,j)),DBLE(OBJPOT(i,j))
-		end do
-		write (unit=7,fmt="(a)") " "
-	end do
-	close(7)
-end subroutine
-
-subroutine dump_phase (II)
-	use params
-	implicit none
-	integer :: II,i,j
-	character(len=80) fname
-	double precision, dimension(-NX/2:NX/2,-NY/2:NY/2) :: phase
-	write(fname, '(i0.4,a,i0.4)') LOOPNO,'.phase.',II/dumpd
-	call calc_phase(phase)
-	open (7, FILE = fname)
-	do i = -NX/2, NX/2
-		do j = -NY/2, NY/2
-			write (unit=7,fmt="(2f10.2, f20.16)")&
-				dble(i*DSPACE),dble(j*DSPACE),dble(phase(i,j))
-		end do
-		write (unit=7,fmt="(a)") " "
-	end do
-	close(7)
-end subroutine
-
-subroutine dump_velocity (II)
-	use params
-	implicit none
-	integer :: II,i,j
-	character(len=80) fname
-	double precision, dimension(-NX/2:NX/2,-NY/2:NY/2) :: phase,velx,vely
-	write(fname, '(i0.4,a,i0.4)') LOOPNO,'.velocity.',II/dumpd
-	call calc_phase(phase)
-	call velxy(phase,velx,vely)
-	open (7, FILE = fname)
-	do i = -NX/2, NX/2
-		do j = -NY/2, NY/2
-			write (unit=7,fmt="(2f10.2, 2f20.16)")&
-				dble(i*DSPACE),dble(j*DSPACE),velx(i,j),vely(i,j)
-		end do
-		write (unit=7,fmt="(a)") " "
-	end do
-	close(7)
-end subroutine
-
 subroutine add_noise
 	use params
 	implicit none
@@ -86,80 +12,23 @@ subroutine add_noise
 	end do
 end subroutine
 
-subroutine load_all(t)
-	use params
-	implicit none
-	integer :: i,j,t
-	double precision :: x, y, real, imag, pot
-	character(2048) :: tmp,fname
-	fname = './xxxx.dumpwf.xxxx'
-	WRITE (fname(3:6), '(I4.4)') LOOPNO
-	WRITE (fname(15:18), '(I4.4)') t
-	open (999, FILE = fname)
-	do i = -NX/2, NX/2
-		do j = -NY/2, NY/2
-			read (999,"(2f16.8,3ES26.10E3)") x, y, real, imag, pot
-			GRID(i,j) = real + EYE*imag
-			OBJPOT(i,j) = pot
-		end do
-		read (999,"(a)") tmp
-	end do
-	close(999)
-	TIME = t*dumpwf*DTSIZE
-	STARTI = t*dumpwf + 1
-	write (8, *) 'Loading file:',fname(1:18),' with time: ',TIME, ' and frame: ', STARTI
-	call calc_OBJPOT
-end subroutine
-
-subroutine load_mult()
-	use params
-	implicit none
-	integer :: i,j,t
-	double precision :: x, y, real, imag, pot
-	character(2048) :: tmp,fname
-	fname = './0000.soliton.0000'
-	GRID = sqrt(GRID*CONJG(GRID))
-	open (999, FILE = fname)
-	do i = -NX/2, NX/2
-		do j = -NY/2, NY/2
-			read (999,"(2f16.8,3ES26.10E3)") x, y, real, imag, pot
-			GRID(i,j) = GRID(i,j)*(real + EYE*imag)
-		end do
-		read (999,"(a)") tmp
-	end do
-	close(999)
-	TIME = 0
-	STARTI = 1
-	write (8, *) 'Loading file:',fname(1:18),' with time: ',TIME, ' and frame: ', STARTI
-	call calc_OBJPOT
-end subroutine
-
-subroutine load_mult_phase()
-	use params
-	implicit none
-	integer :: i,j,t
-	double precision :: x, y, real, imag, pot
-	character(2048) :: tmp,fname
-	fname = './0000.soliton.0000'
-	open (999, FILE = fname)
-	do i = -NX/2, NX/2
-		do j = -NY/2, NY/2
-			read (999,"(2f16.8,3ES26.10E3)") x, y, real, imag, pot
-			GRID(i,j) = GRID(i,j)*EXP(EYE*ATAN2(imag,real))
-		end do
-		read (999,"(a)") tmp
-	end do
-	close(999)
-end subroutine
-
-
 !Approx - homogeneous!
 subroutine approx
 	use params
 	implicit none
 	integer :: i,j
 	if (RHSType .eq. 0) then
-		GRID =  1.00d0
+		if (trapType .eq. 2) then
+			do i = -NX/2, NX/2
+				do j = -NY/2, NY/2
+					GRID(i,j) = (1 - OBJPOT(i,j))
+					if(DBLE(GRID(i,j)) < 0) GRID(i,j) = 0.0d0
+				end do
+			end do
+			GRID = SQRT(GRID)
+		else
+			GRID =  1.00d0
+		end if
 	end if
 	if (RHSType .eq. 1) then
 		do i = -NX/2, NX/2
@@ -755,3 +624,55 @@ subroutine detect_vortex(ret)
 		ret = 1
 	end if
 end
+
+subroutine init_random_seed()
+use iso_fortran_env, only: int64
+implicit none
+integer, allocatable :: seed(:)
+integer :: i, n, un, istat, dt(8), pid
+integer(int64) :: t
+
+call random_seed(size = n)
+allocate(seed(n))
+! First try if the OS provides a random number generator
+open(newunit=un, file="/dev/urandom", access="stream", &
+     form="unformatted", action="read", status="old", iostat=istat)
+if (istat == 0) then
+   read(un) seed
+   close(un)
+else
+   ! Fallback to XOR:ing the current time and pid. The PID is
+   ! useful in case one launches multiple instances of the same
+   ! program in parallel.
+   call system_clock(t)
+   if (t == 0) then
+      call date_and_time(values=dt)
+      t = (dt(1) - 1970) * 365_int64 * 24 * 60 * 60 * 1000 &
+           + dt(2) * 31_int64 * 24 * 60 * 60 * 1000 &
+           + dt(3) * 24_int64 * 60 * 60 * 1000 &
+           + dt(5) * 60 * 60 * 1000 &
+           + dt(6) * 60 * 1000 + dt(7) * 1000 &
+           + dt(8)
+   end if
+   pid = getpid()
+   t = ieor(t, int(pid, kind(t)))
+   do i = 1, n
+      seed(i) = lcg(t)
+   end do
+end if
+call random_seed(put=seed)
+contains
+! This simple PRNG might not be good enough for real work, but is
+! sufficient for seeding a better PRNG.
+function lcg(s)
+  integer :: lcg
+  integer(int64) :: s
+  if (s == 0) then
+     s = 104729
+  else
+     s = mod(s, 4294967296_int64)
+  end if
+  s = mod(s * 279470273_int64, 4294967291_int64)
+  lcg = int(mod(s, int(huge(0), int64)), kind(0))
+end function lcg
+end subroutine init_random_seed

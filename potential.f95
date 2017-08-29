@@ -2,6 +2,7 @@ subroutine calc_OBJPOT
 	use params
 	implicit none
 	integer :: i,j
+	double precision :: r
 	OBJPOT = 0.0d0
 
 	!Normal potential and Trap
@@ -25,17 +26,34 @@ subroutine calc_OBJPOT
 			if(potType .eq. 5) then
 				call calc_OBJPOT_bump_dt
 			end if
+			if(potType .eq. 6) then
+				call calc_OBJPOT_bnd
+			end if
 		end if
 		if (enableTrap) then
-			!$OMP PARALLEL DO
-			do i = -NX/2,NX/2
-			do j = -NY/2,NY/2
-				OBJPOT(i,j) = OBJPOT(i,j)&
-					+0.5d0*TXSCALE*((dble(i)*DSPACE+TXDASH)*(dble(i)*DSPACE+TXDASH))&
-					+0.5d0*TYSCALE*((dble(j)*DSPACE+TYDASH)*(dble(j)*DSPACE+TYDASH))
-			end do
-			end do
-			!$OMP END PARALLEL DO
+			if (trapType .eq. 1) then
+				!$OMP PARALLEL DO
+				do i = -NX/2,NX/2
+				do j = -NY/2,NY/2
+					OBJPOT(i,j) = OBJPOT(i,j)&
+						+0.5d0*TXSCALE*((dble(i)*DSPACE+TXDASH)*(dble(i)*DSPACE+TXDASH))&
+						+0.5d0*TYSCALE*((dble(j)*DSPACE+TYDASH)*(dble(j)*DSPACE+TYDASH))
+				end do
+				end do
+				!$OMP END PARALLEL DO
+			end if
+			if (trapType .eq. 2) then
+				!calculate a max value
+				!$OMP PARALLEL DO
+				do i = -NX/2,NX/2
+				do j = -NY/2,NY/2
+					r = SQRT((dble(i)*DSPACE)**2.0+(dble(j)*DSPACE)**2.0)
+					OBJPOT(i,j) = OBJPOT(i,j)&
+						+MIN(trapMax,0.5d0*(r**2)*((r/R0)**beta))
+				end do
+				end do
+				!$OMP END PARALLEL DO
+			end if
 		end if
 	end if
 	!Shin Experiment
@@ -265,6 +283,19 @@ subroutine calc_OBJPOT_img
 	end do
 end subroutine
 
+subroutine calc_OBJPOT_bnd
+	use params
+	implicit none
+	integer :: i,j,obj
+	do i=-NX/2,NX/2
+		OBJPOT(i,-NY/2)=OBJHEIGHT
+		OBJPOT(i,NY/2)=OBJHEIGHT
+	end do
+	do j=-NY/2,NY/2
+		OBJPOT(-NX/2,j)=OBJHEIGHT
+		OBJPOT(NX/2,j)=OBJHEIGHT
+	end do
+end subroutine
 
 subroutine interp(xloc,xdat,ydat,rety)
 	use params

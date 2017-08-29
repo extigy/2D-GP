@@ -1,12 +1,11 @@
-function [totalE,kinE,potE,interE] = gpeget2denergy_dt(dirarg,startno,stride,endno,speed,nx,ny,g)
+function [totalE,kinE,potE,interE] = gpeget2denergy_dt(dirarg,startno,stride,endno)
 totalE = [];
 kinE = [];
 potE = [];
 for i=startno:stride:endno
-    [gridx,gridy,psi] = gpeget2dPSI(dirarg,i,speed,nx,ny);
-    [~,~,~,~,potential] = gpeget2dWF(dirarg,i,speed,nx,ny);
+    [gridx,gridy,psi,potential] = gpeget2dPSI(dirarg,i);
     fprintf('read %d\n',i);
-    [tE,kE,pE,lE] = gpeget2denergy(gridx,gridy,psi,potential,g);
+    [tE,kE,pE,lE] = gpeget2denergy(gridx,gridy,psi,potential);
     j = (i+(stride-startno))/stride;
     totalE(j) = tE;
     kinE(j) = kE;

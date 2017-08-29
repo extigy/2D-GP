@@ -1,23 +1,22 @@
 module params
   !DEFAULT VALUES---------------------------------------------------------------
   !Iterations to run
-  integer :: NSTEPS=10000
-  integer :: ISTEPS=2000
-  integer :: VSTEPS=2000
+  integer :: NSTEPS=1000
+  integer :: ISTEPS=0
+  integer :: VSTEPS=0
   integer :: HOLDICV = 0
   integer :: PLOTIT = 0
   !Resolution
   integer :: NX = 512
   integer :: NY = 512
-  double precision :: DSPACE = 0.05d0, DTSIZE = 0.001d0
+  double precision :: DSPACE = 0.1d0, DTSIZE = 0.002d0
+  !Dump frequency - Wavefunction - Misc Utils
+  integer :: dumpwf = 100, dumputil = 100
 
-  !Dump frequency - Density - Wavefunction - Misc Utils
-  integer :: dumpd = 100, dumpwf = 100, dumputil = 100
-
-  !GPE Type - 0 Natural Units - 1 Hamonic Oscillator Units - 2 Hamonic Oscillator Units Rotating
+  !GPE Type - 0 Natural Units - 1 Harmonic Oscillator Units - 2 Harmonic Oscillator Units Rotating
   integer :: RHSType = 1
-  double precision :: harm_osc_C = 100.0d0
-  double precision :: harm_osc_mu = 5.64d0
+  double precision :: harm_osc_C = 2000.0d0
+  double precision :: harm_osc_mu = 25.267d0
   logical :: renormalise_mu = .false.
   complex*16 :: GAMMAC = 0.0d0
   logical :: rtNorm = .false.
@@ -30,14 +29,15 @@ module params
   double precision :: noiseamp = 0.000d0
 
   !Flow Speed in X Dir - Start End Stride
-  integer :: VOBS = 0, VOBE = 0, VOBST = 1
-  double precision :: VOBSCALE = 100.0
+  double precision :: VOB = 0.0d0
   double precision :: ROM = 0.0d0
    
   !Potential types - 0 object - 1 free rotational obj - 2 oscillating obj - 3 afm-img
   logical :: enablePot = .true.
-  logical :: enableTrap = .false.
+  logical :: enableTrap = .true.
   integer :: potType = -1
+  !Trap types - 1 harmonic - 2 box trap
+  integer :: trapType = 1
   !Enable if you need to constantly recalculate the potential
   integer :: potRep = 0
   logical :: doShin = .false.
@@ -62,7 +62,10 @@ module params
   double precision :: TXSCALE = 1.0d0 
   double precision :: TYSCALE = 1.0d0
   double precision :: TTM=0.0d0
-
+  !Box Trap
+  double precision :: R0 = 10.0d0
+  double precision :: beta = 15.0d0
+  double precision :: trapMax = 100.0d0
   !AFM-IMAGE
   character(2048) :: afm_filename
   integer :: afmRES = 256
@@ -87,15 +90,14 @@ module params
   !Damping radius
   logical :: dampedX = .false.
   logical :: dampedY = .false.
+  logical :: dampedR = .false.
   double precision :: dampedXDist = 10.0d0
   double precision :: dampedYDist = 0.0d0
-  double precision :: dampedgamma = 0.001d0
-
-
-
+  double precision :: dampedRDist = 0.0d0
+  double precision :: dampedRWidth = 10.0d0
+  double precision :: dampedGamma = 0.0d0
 
   !GLOBALS----------------------------------------------------------------------
-  double precision :: VOB
   integer :: LOOPNO=5,STARTI=1,BMPLOADED = 0
   double precision,parameter :: PI = 4.0d0*ATAN(1.0d0)
   complex*16 :: DT,EYE = (0.0d0,1.0d0)

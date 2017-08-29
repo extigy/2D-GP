@@ -1,21 +1,20 @@
+#If you do not have a system installed version of libnetcdf-dev or libnetcdff-dev
+#replace these with your local install directories
+NETCDF = /data/.fs/netcdf
+NETCDF-FORTRAN = /data/.fs/netcdf-fortran
 
 FC = gfortran
+FCFLAGS = -O3 -march=native -fopenmp -I$(NETCDF)/include -I$(NETCDF)-fortran/include
+LDFLAGS = -lm -lnetcdff -lnetcdf -L$(NETCDF)/lib -L$(NETCDF)-fortran/lib
 
-FCFLAGS = -O3 -fopenmp
+PROGRAMS = gp
 
-LDFLAGS = -I/usr/include/ -L/usr/lib/
+all: $(PROGRAMS) params.in ic.in
 
-PROGRAMS = gp mu
-
-
-all: $(PROGRAMS)
-
-gp: params.o bitmap.o utils.o rhs.o potential.o
-
-mu: mu.o params.o bitmap.o utils.o rhs.o potential.o
+gp: params.o output.o bitmap.o output.o utils.o rhs.o potential.o 
 
 %: %.o
-	$(FC) $(FCFLAGS) -o $@ $^ -lnetcdff -lnetcdf
+	$(FC) $(FCFLAGS) -o $@ $^ $(LDFLAGS) 
 
 %.o: %.f95
 	$(FC) $(FCFLAGS) -c $< $(LDFLAGS)

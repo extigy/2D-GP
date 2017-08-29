@@ -1,4 +1,4 @@
-function [totalE,kinE,potE,interE] = gpeget2denergy(gridx,gridy,inpsi,inpot,g)
+function [totalE,kinE,potE,interE] = gpeget2denergy(gridx,gridy,inpsi,inpot)
 dx=gridx(2)-gridx(1);
 [FX, FY] = derivative5(inpsi, 'x', 'y');
 FX = FX/dx;
@@ -7,8 +7,8 @@ FY = FY/dx;
 dpsi = FX.*conj(FX)+FY.*conj(FY);
 kin=0.5*dpsi;
 
-pot=(inpot).*inpsi.*conj(inpsi);
-inter=(g/2).*inpsi.*conj(inpsi).*inpsi.*conj(inpsi);
+pot=inpot.*inpsi.*conj(inpsi);
+inter=0.5.*inpsi.*conj(inpsi).*inpsi.*conj(inpsi);
 
 kinE=dx*dx*simpson(simpson(kin));
 potE=dx*dx*simpson(simpson(pot));
