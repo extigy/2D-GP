@@ -138,6 +138,12 @@ Name | Description
 `imag` | Imaginary part of the system wavefunction
 `pot` | The current external potential field.
 
+#### Reading the files
+Included in the `scripts` folder is a matlab script named `gpeget2dPSI.m`. Use this file to load the output wavefunction data into matlab for post processing. The function takes the simulation directory and the number of the data file.
+```
+[gridx,gridy,psi,potential] = gpeget2dPSI('/directory/to/simulation',250);
+```
+
 ### Internal calculation frequency
 
 The fluid force and energy are calculated by default every 100 time steps. If rotating or oscillating obstacles are used it my be useful to increase the `dumputil` frequency.  
