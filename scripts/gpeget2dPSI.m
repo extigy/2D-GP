@@ -13,5 +13,7 @@ real = ncread(fname,'real');
 imag = ncread(fname,'imag');
 potential = ncread(fname,'pot');
 psi = real + 1i.*imag;
+potential = potential';
+psi = psi';
 fclose('all');
 end
