@@ -131,6 +131,13 @@ function [xlocs,ylocs,pol] = gpeget2dvort(psi,gridx,gridy,varargin)
     %shift to grid
     xlocs = (xlocs-1)*dx + gridx(1); 
     ylocs = (ylocs-1)*dy + gridy(1);
+    %delete vortices on the boundary
+    xlocs_new = xlocs(ylocs > gridy(3) & ylocs < gridy(end-3) & ylocs > gridy(3) & ylocs < gridy(end-3));
+    ylocs_new = ylocs(ylocs > gridy(3) & ylocs < gridy(end-3) & ylocs > gridy(3) & ylocs < gridy(end-3));
+    pol = pol(ylocs > gridy(3) & ylocs < gridy(end-3) & ylocs > gridy(3) & ylocs < gridy(end-3));
+    xlocs = xlocs_new;
+    ylocs = ylocs_new;
+    
     
     pos='r';
     neg='b';
