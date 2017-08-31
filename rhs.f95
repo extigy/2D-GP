@@ -23,11 +23,11 @@ subroutine runit(steps,rt,plot)
 		if (modulo(i,10) == 0) then
 			open (10, FILE = "STATUS")
 			if (rt == 1) then
-					write (unit=10,fmt="(a,i3,a,f6.2,a)")&
-						"Simulating: ",LOOPNO, ":     ",(dble(i)/dble(steps))*100.0d0,"%"
+					write (unit=10,fmt="(a,f6.2,a)")&
+						"Simulating:     ",(dble(i)/dble(steps))*100.0d0,"%"
 				else
-					write (unit=10,fmt="(a,i3,a,f6.2,a)")&
-						"Ground State: ",LOOPNO, ":     " ,(dble(i)/dble(steps))*100.0d0,"%"
+					write (unit=10,fmt="(a,f6.2,a)")&
+						"Ground State:   " ,(dble(i)/dble(steps))*100.0d0,"%"
 			end if
 			close(10)
 		end if
