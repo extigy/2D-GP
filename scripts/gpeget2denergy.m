@@ -1,9 +1,9 @@
 function [totalE,kinE,potE,interE] = gpeget2denergy(gridx,gridy,inpsi,inpot)
 dx=gridx(2)-gridx(1);
-%[FX, FY] = derivative5(inpsi, 'x', 'y');
-%FX = FX/dx;
-%FY = FY/dx;
-[FX, FY] = gradient(inpsi,dx,dx);
+[FX, FY] = derivative5(inpsi, 'x', 'y');
+FX = FX/dx;
+FY = FY/dx;
+%[FX, FY] = gradient(inpsi,dx,dx);
 dpsi = FX.*conj(FX)+FY.*conj(FY);
 kin=0.5*dpsi;
 
