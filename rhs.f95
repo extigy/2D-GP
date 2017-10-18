@@ -20,7 +20,7 @@ subroutine runit(steps,rt,plot)
 		if (modulo(i,dumputil) == 0) then
 				call calc_misc
 		end if
-		if (modulo(i,10) == 0 .and. i > 0) then
+		if (modulo(i,dumputil) == 0 .and. i > 0) then
 			open (10, FILE = "STATUS")
 			if (rt == 1) then
 					write (unit=10,fmt="(a,f6.2,a)")&
