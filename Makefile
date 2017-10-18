@@ -1,11 +1,11 @@
 #If you do not have a system installed version of libnetcdf-dev or libnetcdff-dev
 #replace these with your local install directories
-NETCDF = /data/.fs/netcdf
-NETCDF-FORTRAN = /data/.fs/netcdf-fortran
+NETCDF = /share/apps/NetCDF/netcdf-4.4.0
+NETCDF-FORTRAN = /share/apps/NetCDF-Fortran/netcdf-fortran-4.4.3
 
 FC = gfortran
-FCFLAGS = -O3 -march=native -fopenmp -I$(NETCDF)/include -I$(NETCDF)-fortran/include
-LDFLAGS = -lm -lnetcdff -lnetcdf -L$(NETCDF)/lib -L$(NETCDF)-fortran/lib
+FCFLAGS = -O3 -march=native -fopenmp -I$(NETCDF)/include -I$(NETCDF-FORTRAN)/include
+LDFLAGS = -lm -lnetcdff -lnetcdf -L$(NETCDF)/lib -L$(NETCDF-FORTRAN)/lib
 
 PROGRAMS = gp
 
