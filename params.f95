@@ -102,7 +102,7 @@ module params
   double precision,parameter :: PI = 4.0d0*ATAN(1.0d0)
   complex*16 :: DT,EYE = (0.0d0,1.0d0)
   double precision :: NORM,OLDNORM = 1.0d0
-  complex*16, dimension(:,:), ALLOCATABLE :: GRID,OBJPOT
+  complex*16, dimension(:,:), ALLOCATABLE :: GRID,OBJPOT,IMPOSEDPHASE
   double precision :: TIME,IMAGTIME
   double precision, dimension(2) :: FVECOLD = 0.0d0
   double precision :: OBJYVEL = 0.0d0,OBJXVEL = 0.0d0
@@ -115,5 +115,9 @@ contains
     include 'params.in'
     ALLOCATE(GRID(-NX/2:NX/2,-NY/2:NY/2))
     ALLOCATE(OBJPOT(-NX/2:NX/2,-NY/2:NY/2))
+    if (HOLDICV .eq. 1) then
+      ALLOCATE(IMPOSEDPHASE(-NX/2:NX/2,-NY/2:NY/2))
+      IMPOSEDPHASE = 1.0d0
+    end if
    END SUBROUTINE
 end module

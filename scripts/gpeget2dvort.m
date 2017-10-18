@@ -93,7 +93,15 @@ function [xlocs,ylocs,pol] = gpeget2dvort(psi,gridx,gridy,varargin)
     l3=(velx(3:end,1:end-2)+velx(3:end,2:end-1)+velx(3:end,3:end));
     l4=(vely(1:end-2,3:end)+vely(2:end-1,3:end)+vely(3:end,3:end));
     presort=l4-l2+l1-l3;
-    presort(p.Results.potential>p.Results.potentialheight)=0;
+    
+    %Mask using density and potential
+    dens = psi.*conj(psi);
+    maskDens = dens>0.1*max(dens(:));
+    maskDensFilled = imfill(maskDens,'holes');
+    presort(~maskDensFilled)=0;
+    if(sum(p.Results.potential(:)) > 0)
+        presort(p.Results.potential>p.Results.potentialheight)=0;
+    end
     
     %label vort field
     negareas = bwlabel(presort<-6.2); %just under 2pi
@@ -132,12 +140,13 @@ function [xlocs,ylocs,pol] = gpeget2dvort(psi,gridx,gridy,varargin)
     xlocs = (xlocs-1)*dx + gridx(1); 
     ylocs = (ylocs-1)*dy + gridy(1);
     %delete vortices on the boundary
-    xlocs_new = xlocs(ylocs > gridy(3) & ylocs < gridy(end-3) & ylocs > gridy(3) & ylocs < gridy(end-3));
-    ylocs_new = ylocs(ylocs > gridy(3) & ylocs < gridy(end-3) & ylocs > gridy(3) & ylocs < gridy(end-3));
-    pol = pol(ylocs > gridy(3) & ylocs < gridy(end-3) & ylocs > gridy(3) & ylocs < gridy(end-3));
-    xlocs = xlocs_new;
-    ylocs = ylocs_new;
-    
+    if strcmp(p.Results.boundary,'zero')
+        xlocs_new = xlocs(ylocs > gridy(3) & ylocs < gridy(end-3) & ylocs > gridy(3) & ylocs < gridy(end-3));
+        ylocs_new = ylocs(ylocs > gridy(3) & ylocs < gridy(end-3) & ylocs > gridy(3) & ylocs < gridy(end-3));
+        pol = pol(ylocs > gridy(3) & ylocs < gridy(end-3) & ylocs > gridy(3) & ylocs < gridy(end-3));
+        xlocs = xlocs_new;
+        ylocs = ylocs_new;
+    end
     
     pos='r';
     neg='b';
@@ -149,7 +158,7 @@ function [xlocs,ylocs,pol] = gpeget2dvort(psi,gridx,gridy,varargin)
         h=figure();
         if(p.Results.plotphase == 1)
             %Phase plot with brightness=density;
-            C = hsv;
+            C = hot;
             L = size(C,1);
             Gs = round(interp1(linspace(min(phase(:)),max(phase(:)),L),1:L,phase));
             H = reshape(C(Gs,:),[size(Gs) 3]).*repmat(mat2gray(abs(psi).^2),[1,1,3]);

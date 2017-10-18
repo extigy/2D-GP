@@ -286,6 +286,29 @@ subroutine insert_rand_vortex(n,r,circ)
 	end do
 end
 
+subroutine impose_rand_vortex(n,r,circ,seed)
+	use params
+	implicit none
+	integer :: i,j,k,n,seed
+	double precision ::circ,rv,tv,xloc,yloc,rs,xx,yy,r
+	call srand(seed+nint(circ)+1)
+
+	do k=1,n
+		rv = rand()*r
+		tv = rand()*2.0d0*PI
+		xloc = rv * cos(tv)
+		yloc = rv * sin(tv)
+		do i = -NX/2, NX/2
+			do j = -NY/2, NY/2
+				xx = (i*DSPACE)
+				yy = (j*DSPACE)
+				IMPOSEDPHASE(i,j) = IMPOSEDPHASE(i,j)*exp(circ*EYE*(atan2(yy-yloc,xx-xloc)))
+			end do
+		end do
+	end do
+	GRID = sqrt(GRID*conjg(GRID))*IMPOSEDPHASE
+end
+
 subroutine insert_vortex(xloc,yloc,circ)
 	use params
 	implicit none
@@ -303,25 +326,7 @@ subroutine insert_vortex(xloc,yloc,circ)
 			R(i,j) = sqrt(rs*(0.3437+0.0286*rs)/(1+0.3333*rs+0.0286*rs*rs)); 
 		end do
 	end do
-	GRID = GRID*R*phse;
-end subroutine
-
-subroutine insert_vortex_phase(xloc,yloc,circ)
-	use params
-	implicit none
-	integer :: i,j,k
-	double precision :: xloc,yloc,rs,xx,yy,circ
-	double precision, dimension(-NX/2:NX/2,-NY/2:NY/2) :: R
-	complex*16, dimension(-NX/2:NX/2,-NY/2:NY/2) :: phse
-
-	do i = -NX/2, NX/2
-		do j = -NY/2, NY/2
-			xx = (i*DSPACE)
-			yy = (j*DSPACE)
-			phse(i,j) = exp(circ*EYE*(atan2(yy-yloc,xx-xloc)))
-		end do
-	end do
-	GRID = GRID*phse;
+	GRID = GRID*R*phse
 end subroutine
 
 subroutine velxy(phase,velx,vely)
@@ -624,55 +629,3 @@ subroutine detect_vortex(ret)
 		ret = 1
 	end if
 end
-
-subroutine init_random_seed()
-use iso_fortran_env, only: int64
-implicit none
-integer, allocatable :: seed(:)
-integer :: i, n, un, istat, dt(8), pid
-integer(int64) :: t
-
-call random_seed(size = n)
-allocate(seed(n))
-! First try if the OS provides a random number generator
-open(newunit=un, file="/dev/urandom", access="stream", &
-     form="unformatted", action="read", status="old", iostat=istat)
-if (istat == 0) then
-   read(un) seed
-   close(un)
-else
-   ! Fallback to XOR:ing the current time and pid. The PID is
-   ! useful in case one launches multiple instances of the same
-   ! program in parallel.
-   call system_clock(t)
-   if (t == 0) then
-      call date_and_time(values=dt)
-      t = (dt(1) - 1970) * 365_int64 * 24 * 60 * 60 * 1000 &
-           + dt(2) * 31_int64 * 24 * 60 * 60 * 1000 &
-           + dt(3) * 24_int64 * 60 * 60 * 1000 &
-           + dt(5) * 60 * 60 * 1000 &
-           + dt(6) * 60 * 1000 + dt(7) * 1000 &
-           + dt(8)
-   end if
-   pid = getpid()
-   t = ieor(t, int(pid, kind(t)))
-   do i = 1, n
-      seed(i) = lcg(t)
-   end do
-end if
-call random_seed(put=seed)
-contains
-! This simple PRNG might not be good enough for real work, but is
-! sufficient for seeding a better PRNG.
-function lcg(s)
-  integer :: lcg
-  integer(int64) :: s
-  if (s == 0) then
-     s = 104729
-  else
-     s = mod(s, 4294967296_int64)
-  end if
-  s = mod(s * 279470273_int64, 4294967291_int64)
-  lcg = int(mod(s, int(huge(0), int64)), kind(0))
-end function lcg
-end subroutine init_random_seed

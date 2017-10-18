@@ -2,7 +2,8 @@ subroutine runit(steps,rt,plot)
 	use params
 	use output
 	implicit none
-	integer :: steps,rt,i,ii,ji,plot,isvorts
+	integer :: steps,rt,i,ii,ji,plot,isvorts,j,k,l,m,n
+	double precision :: a,b,c,d,f
 	if (plot == 1) then
 		call dump_wavefunction_ncdf(0) !dump initial condition
 	end if
@@ -11,8 +12,7 @@ subroutine runit(steps,rt,plot)
 
 		if(rt == 2) then !it's vortex imprinting
 			if(HOLDICV == 1 .and. modulo(i,10) == 9) then
-				GRID = sqrt(GRID*conjg(GRID))
-				include 'ic.in'
+				GRID = sqrt(GRID*conjg(GRID))*IMPOSEDPHASE
 			end if
 		end if
 		TIME = TIME + dble(DT)
@@ -20,14 +20,17 @@ subroutine runit(steps,rt,plot)
 		if (modulo(i,dumputil) == 0) then
 				call calc_misc
 		end if
-		if (modulo(i,10) == 0) then
+		if (modulo(i,10) == 0 .and. i > 0) then
 			open (10, FILE = "STATUS")
 			if (rt == 1) then
 					write (unit=10,fmt="(a,f6.2,a)")&
 						"Simulating:     ",(dble(i)/dble(steps))*100.0d0,"%"
+				else if (rt == 2) then
+					write (unit=10,fmt="(a,f6.2,a)")&
+						"Imaginary Time Propogation (after ic.in):     ",(dble(i)/dble(steps))*100.0d0,"%"
 				else
 					write (unit=10,fmt="(a,f6.2,a)")&
-						"Ground State:   " ,(dble(i)/dble(steps))*100.0d0,"%"
+						"Imaginary Time Propogation:   " ,(dble(i)/dble(steps))*100.0d0,"%"
 			end if
 			close(10)
 		end if

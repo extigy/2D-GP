@@ -3,8 +3,8 @@ program gp
 	use output
 	implicit none
 	character(len=80) fname
-	integer :: ji,ii
-	double precision :: ret,tmptime
+	integer :: i,j,k,l,m,n,ji,ii
+	double precision :: ret,tmptime,a,b,c,d,f
 	CALL init_params
 	!Initialise
 	GRID = 0
@@ -16,7 +16,7 @@ program gp
 	open (8, FILE = 'utils.dat')
 	call runit(ISTEPS,0,PLOTIT)
 	include 'ic.in'
-	call runit(VSTEPS,2,0)
+	call runit(VSTEPS,2,PLOTIT)
 	DT = DTSIZE
 	call add_noise
 	call runit(NSTEPS,1,1)
