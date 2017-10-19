@@ -276,22 +276,12 @@ subroutine calc_phase(phase)
 	end do
 end subroutine
 
-subroutine insert_rand_vortex(n,r,circ)
-	use params
-	implicit none
-	integer :: i,n
-	double precision ::circ,r
-	do i = 1,n
-		call insert_vortex(dble(r*RAND() - r/2.0),dble(r*RAND() - r/2.0),circ) 
-	end do
-end
-
 subroutine impose_rand_vortex(n,r,circ,seed)
 	use params
 	implicit none
-	integer :: i,j,k,n,seed
-	double precision ::circ,rv,tv,xloc,yloc,rs,xx,yy,r
-	call srand(seed+nint(circ)+1)
+	integer :: i,j,k,n,seed,circ
+	double precision ::rv,tv,xloc,yloc,rs,xx,yy,r
+	call srand(seed+circ+1)
 
 	do k=1,n
 		rv = rand()*r
@@ -312,21 +302,20 @@ end
 subroutine insert_vortex(xloc,yloc,circ)
 	use params
 	implicit none
-	integer :: i,j,k
-	double precision :: xloc,yloc,rs,xx,yy,circ
+	integer :: i,j,k,circ
+	double precision :: xloc,yloc,rs,xx,yy
 	double precision, dimension(-NX/2:NX/2,-NY/2:NY/2) :: R
-	complex*16, dimension(-NX/2:NX/2,-NY/2:NY/2) :: phse
 
 	do i = -NX/2, NX/2
 		do j = -NY/2, NY/2
 			xx = (i*DSPACE)
 			yy = (j*DSPACE)
 			rs=(xx-xloc)**2.0d0 + (yy-yloc)**2.0d0;
-			phse(i,j) = exp(circ*EYE*(atan2(yy-yloc,xx-xloc)))
+			IMPOSEDPHASE(i,j) = IMPOSEDPHASE(i,j)*exp(circ*EYE*(atan2(yy-yloc,xx-xloc)))
 			R(i,j) = sqrt(rs*(0.3437+0.0286*rs)/(1+0.3333*rs+0.0286*rs*rs)); 
 		end do
 	end do
-	GRID = GRID*R*phse
+	GRID = sqrt(GRID*conjg(GRID))*R*IMPOSEDPHASE
 end subroutine
 
 subroutine velxy(phase,velx,vely)
@@ -572,7 +561,7 @@ subroutine kill_vortex_far()
 		if((vortexKillX .and. abs(xloc) > vortexKillXDist) .or.&
 		   (vortexKillY .and. abs(yloc) > vortexKillYDist)) then
 			write(6,*) "Killing positive vortex at: ", xloc, ", ", yloc
-			call insert_vortex(xloc,yloc,-1.0d0)
+			call insert_vortex(xloc,yloc,-1)
 			call set_homg_sq(nint(xloc/DSPACE),nint(yloc/DSPACE),8)
 		end if
 	end do
@@ -597,7 +586,7 @@ subroutine kill_vortex_far()
 		if((vortexKillX .and. abs(xloc) > vortexKillXDist) .or.&
 		   (vortexKillY .and. abs(yloc) > vortexKillYDist)) then
 			write(6,*) "Killing negative vortex at: ", xloc, ", ", yloc
-			call insert_vortex(xloc,yloc,1.0d0)
+			call insert_vortex(xloc,yloc,1)
 			call set_homg_sq(nint(xloc/DSPACE),nint(yloc/DSPACE),8)
 		end if
 	end do
