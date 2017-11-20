@@ -54,7 +54,7 @@ module params
   double precision :: MOMINERTIA=0.000001d0
   !Oscillating Obj
   double precision :: OBJAMP = 0.0d0, OBJW = 0.05d0 !amp, freq
-  !Trap
+  !Trap Settings
   double precision :: TXDASH=0.0d0
   double precision :: TYDASH=0.0d0
   double precision :: TVXDASH=0.0d0
@@ -62,10 +62,9 @@ module params
   double precision :: TXSCALE = 1.0d0 
   double precision :: TYSCALE = 1.0d0
   double precision :: TTM=0.0d0
-  !Box Trap
-  double precision :: R0 = 10.0d0
-  double precision :: beta = 15.0d0
-  double precision :: trapMax = 100.0d0
+  double precision :: TRAPR = 5.0d0
+  double precision :: TRAPBETA = 2.0d0
+  double precision :: TRAPHEIGHT = 0.0d0
   !AFM-IMAGE
   character(2048) :: afm_filename
   integer :: afmRES = 256

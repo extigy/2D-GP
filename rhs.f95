@@ -77,6 +77,7 @@ subroutine iterate (rt)
 		if (RHSType .eq. 0) then
 			call calc_norm
 			GRID = GRID/sqrt(NORM)
+ 			!GRID = GRID*sqrt(259.1797d0)
 			GRID = GRID*sqrt(DSPACE*DSPACE*NX*NY)
 		end if
 		if (RHSType .eq. 1) then
