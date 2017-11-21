@@ -3,10 +3,11 @@
 !
 NX = 256
 NY = 256
-NSTEPS=50000
-VSTEPS=0
-ISTEPS=10
+NSTEPS=5000
+DSTEPS=1000
+ISTEPS=100
 
+GAMMAC = 0.1d0
 DSPACE = 0.1d0
 DTSIZE = 0.002d0
 
@@ -17,7 +18,6 @@ BCY = 1
 harm_osc_C = 2000.0d0
 harm_osc_mu = 25.26698674d0
 
-enablePot = .true.
 enableTrap = .true.
+trapType = 0
 TXSCALE = 0.97d0
-GAMMAC = 0.1d0

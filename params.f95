@@ -3,9 +3,9 @@ module params
   !Iterations to run
   integer :: NSTEPS=1000
   integer :: ISTEPS=0
-  integer :: VSTEPS=0
-  integer :: HOLDICV = 0
-  integer :: PLOTIT = 0
+  integer :: DSTEPS=0
+  logical :: HOLDIC = .true.
+  logical :: PLOTALL = .false.
   !Resolution
   integer :: NX = 512
   integer :: NY = 512
@@ -18,8 +18,8 @@ module params
   double precision :: harm_osc_C = 2000.0d0
   double precision :: harm_osc_mu = 25.267d0
   logical :: renormalise_mu = .false.
-  complex*16 :: GAMMAC = 0.0d0
-  logical :: rtNorm = .false.
+  double precision :: GAMMAC = 0.0d0
+  logical :: NORMALL = .false.
 
   !Boundary Conditions - 0 reflective - 1 periodic - 2 zero
   integer :: BCX = 0
@@ -32,14 +32,14 @@ module params
   double precision :: VOB = 0.0d0
   double precision :: ROM = 0.0d0
    
-  !Potential types - 0 object - 1 free rotational obj - 2 oscillating obj - 3 afm-img
+  !Potential types
   logical :: enablePot = .true.
   logical :: enableTrap = .true.
   integer :: potType = -1
-  !Trap types - 1 harmonic - 2 box trap
-  integer :: trapType = 1
+  !Trap types
+  integer :: trapType = -1
   !Enable if you need to constantly recalculate the potential
-  integer :: potRep = 0
+  logical :: potRep = .false.
   logical :: doShin = .false.
 
   !Object properties
@@ -101,7 +101,8 @@ module params
   double precision,parameter :: PI = 4.0d0*ATAN(1.0d0)
   complex*16 :: DT,EYE = (0.0d0,1.0d0)
   double precision :: NORM,OLDNORM = 1.0d0
-  complex*16, dimension(:,:), ALLOCATABLE :: GRID,OBJPOT,IMPOSEDPHASE
+  complex*16, dimension(:,:), ALLOCATABLE :: GRID,IMPOSEDPHASE
+  double precision, dimension(:,:), ALLOCATABLE :: OBJPOT
   double precision :: TIME,IMAGTIME
   double precision, dimension(2) :: FVECOLD = 0.0d0
   double precision :: OBJYVEL = 0.0d0,OBJXVEL = 0.0d0
@@ -114,9 +115,13 @@ contains
     include 'params.in'
     ALLOCATE(GRID(-NX/2:NX/2,-NY/2:NY/2))
     ALLOCATE(OBJPOT(-NX/2:NX/2,-NY/2:NY/2))
-    if (HOLDICV .eq. 1) then
+    if (HOLDIC) then
       ALLOCATE(IMPOSEDPHASE(-NX/2:NX/2,-NY/2:NY/2))
       IMPOSEDPHASE = 1.0d0
     end if
+    GRID = 0.0d0
+    OBJPOT = 0.0d0
+    TIME = 0.0d0
+    IMAGTIME = 0.0d0
    END SUBROUTINE
 end module

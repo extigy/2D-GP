@@ -4,7 +4,7 @@ NETCDF = /usr
 NETCDF-FORTRAN = /usr
 
 FC = gfortran
-FCFLAGS = -O3 -march=native -fopenmp -I$(NETCDF)/include -I$(NETCDF-FORTRAN)/include
+FCFLAGS = -O3 -Wall -march=native -fopenmp -I$(NETCDF)/include -I$(NETCDF-FORTRAN)/include
 LDFLAGS = -lm -lnetcdff -lnetcdf -L$(NETCDF)/lib -L$(NETCDF-FORTRAN)/lib
 
 PROGRAMS = gp
