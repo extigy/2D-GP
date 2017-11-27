@@ -19,6 +19,7 @@ function [xlocs,ylocs,pol] = gpeget2dvort(psi,gridx,gridy,varargin)
     addParameter(p,'potentialheight',25);
     addParameter(p,'plot',0);
     addParameter(p,'plotphase',0);
+    addParameter(p,'plotvortfield',0);
     addParameter(p,'boundary','periodic');
     addParameter(p,'filtersize',0);
     addParameter(p,'verbose',0);
@@ -101,6 +102,11 @@ function [xlocs,ylocs,pol] = gpeget2dvort(psi,gridx,gridy,varargin)
     presort(~maskDensFilled)=0;
     if(sum(p.Results.potential(:)) > 0)
         presort(p.Results.potential>p.Results.potentialheight)=0;
+    end
+    
+    if(p.Results.plotvortfield == 1)
+       h=figure();
+       imagesc(gridx,gridy,presort);
     end
     
     %label vort field

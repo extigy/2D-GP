@@ -12,7 +12,6 @@ DSPACE = 0.1d0
 DTSIZE = 0.002d0
 
 RHSType = 1
-ROM = 0.6d0
 BCX = 1
 BCY = 1
 harm_osc_C = 2000.0d0
@@ -20,4 +19,3 @@ harm_osc_mu = 25.26698674d0
 
 enableTrap = .true.
 trapType = 0
-TXSCALE = 0.97d0

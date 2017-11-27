@@ -1,14 +1,14 @@
 # Introduction
-2D-GP is a FORTRAN project designed to numerically solve the Gross-Pitaevskii equation (GPE) in two dimensions (2D). Solving the GPE allows for qualitatively accurate simulations of Bose-Eintein Condensates (BECs) at zero temperature.  
+2D-GP is a FORTRAN project designed to numerically solve the Gross-Pitaevskii equation (GPE) in two dimensions (2D). Solving the GPE allows for qualitatively accurate simulations of Bose-Einstein Condensates (BECs) at zero temperature.  
 2D-GP solves the GPE using 4th order Runge-Kutta time stepping on a grid of points with regular spacing in both the x and y dimensions. User defined grid spacing and time step is supported.
 
 ### Requirements
-2D-GP requires NetCDF and NetCDF-fortran installations to run. NetCDF is used to save compressed data files. On ubuntu you can install the required packages by running:
+2D-GP requires NetCDF and NetCDF-Fortran installations to run. NetCDF is used to save compressed data files. On Ubuntu you can install the required packages by running:
 ```
 sudo apt-get install libnetcdf11 libnetcdff6 libnetcdf-dev libnetcdff-dev
 ```
 
-You can also create a local installation of NetCDF by downloading the source files from the [NetCDF website](https://www.unidata.ucar.edu/software/netcdf/) and compiling them yourself. If you do this, make a note of the installation location as you will neet it to install 2D-GP.
+You can also create a local installation of NetCDF by downloading the source files from the [NetCDF website](https://www.unidata.ucar.edu/software/netcdf/) and compiling them yourself. If you do this, make a note of the installation location as you will need it to install 2D-GP.
 
 ### Installation
 * Clone the git repository somewhere : `git clone https://github.com/Extigy/2D-GP.git`
@@ -28,250 +28,302 @@ You can also create a local installation of NetCDF by downloading the source fil
 ### Editing Parameters
 To run a simulation with custom parameters
 *  Create a simulation as in **Running a Simulation** but do not run `./gp&`.
-*  Edit `params.in` and run `make2dgp` again to reflect the changes.
+*  Edit `params.in` to include any parameters you wish to change from their defaults and run `make2dgp` again to reflect the changes.
 *  Run `./gp&` to start the simulation.
 
-Editable parameters along with descriptions and their default values can be found throughout this document. Hopefully, most editable parameters can be left as default.
+A full list of parameters, their descriptions, and their default values is included at the end. The code is written so that, most editable parameters can be left as default and so not included in `params.in` at all.
 
 # Gross-Pitaevskii Equation
 2D-GP solves the GPE in 2 different dimensionless forms: the homogeneous system and the harmonically trapped system.  
 
-The homogeneous system is used to fill the entire computational box with fluid, emulating superfluid liquid helium II. The harmonic trapped case is employed to emulate quasi-2D BEC experiments when confined using a harmonic trap.
+The homogeneous system is primarily used to emulate superfluid helium II. The harmonic trapped case is primarily used to emulate quasi-2D BEC experiments, confined using a harmonic trap.
 
----
 ### Homogeneous System
 The dimensionless homogeneous GPE is defined as
-![H_GPE](http://latex.codecogs.com/gif.latex?i%5Cfrac%7B%5Cpartial%5Cpsi%7D%7B%5Cpartial%20t%7D=-%5Cfrac%7B1%7D%7B2%7D%5Cnabla%5E2%5Cpsi%2B%7C%5Cpsi%7C%5E2%5Cpsi%2BV%5Cpsi-%5Cpsi%2Biv_%7Bob%7D%5Cfrac%7B%5Cpartial%5Cpsi%7D%7B%5Cpartial%20x%7D),  
-where ![psi](http://latex.codecogs.com/gif.latex?%5Cpsi) is the condensate wavefunction, ![V](http://latex.codecogs.com/gif.latex?V) is a potential allowing for obstacles and ![v_ob](http://latex.codecogs.com/gif.latex?v_{ob}) is the fluid velocity along the x direction.  
+$$i\frac{\partial\psi}{\partial t}=-\frac{1}{2}\nabla^2\psi+|\psi|^2\psi+V\psi-\psi+iv_{ob}\frac{\partial\psi}{\partial x},$$
+where $\psi$ is the wavefunction, $V$ is a potential allowing for the use of boundaries and obstacles and $v_{ob}$ is the fluid velocity along the $x$ direction.  
 
-This version of the GPE is valid when properties are scaled with the so called '**natural units**'
+In this setup the wavefunction is scaled so that the density away from any perturbations is $n_0=1$.
 
+This version of the GPE is valid when properties are scaled with the so called '**natural units**',
+ * Density at infinity: $n_0$,
+ * Length: $\xi = \dfrac{\hbar}{\sqrt{m\mu}}$,
+ * Energy: $\mu = n_0g$,
+ * Velocity: $c = \dfrac{\sqrt{n_0g}}{m}$,
+ * Time: $\dfrac{\xi}{c}$.
 
-![Natural Scaling](http://latex.codecogs.com/gif.latex?%5Cdpi%7B110%7D%20%5C%5C%5Cmathrm%7BDensity%7Eat%7Einfinity%3A%7D%7En_0%20%5C%5C%5Cmathrm%7BLength%3A%7D%7E%5Cxi%20%3D%20%5Cfrac%7B%5Chbar%7D%7B%5Csqrt%7Bm%5Cmu%7D%7D%20%5C%5C%5Cmathrm%7BEnergy%3A%7D%7E%5Cmu%20%3D%20n_0g%20%5C%5C%5Cmathrm%7BVelocity%3A%7D%7Ec%3D%5Cfrac%7B%5Csqrt%7Bn_0g%7D%7D%7Bm%7D%20%5C%5C%5Cmathrm%7BTime%3A%7D%7E%5Cfrac%7B%5Cxi%7D%7Bc%7D)
+To use this system, set `RHSType=0` in `params.in`.
 
-The following parameters can be modified,
-
-Parameter | Default | Explanation
---- | --- | ---
-`RHSType` | `1` | GPE Type - Set to `0` for **natural units**, `1` for **harmonic oscillator units**.
-`VOB` | `0` | Velocity of the linearly translating frame, ![v_ob](http://latex.codecogs.com/gif.latex?v_{ob}).
-***
 ### Harmonically Trapped System
-The dimensionless GPE in a harmonically trapped system is defined as  
-![T_GPE](http://latex.codecogs.com/gif.latex?i%5Cfrac%7B%5Cpartial%5Cpsi%7D%7B%5Cpartial%20t%7D=-%5Cfrac%7B1%7D%7B2%7D%5Cnabla%5E2%5Cpsi%2Bg_{2D}%7C%5Cpsi%7C%5E2%5Cpsi%2BV%5Cpsi-%5Cmu_{2D}%5Cpsi),  
-where ![psi](http://latex.codecogs.com/gif.latex?%5Cpsi) is the condensate wavefunction, ![g2d](http://latex.codecogs.com/gif.latex?g_{2D}) is the interaction strength, ![V](http://latex.codecogs.com/gif.latex?V) is a potential allowing for a harmonic trap and/or obstacles, and ![mu2d](http://latex.codecogs.com/gif.latex?%5Cmu_{2D}) is the chemical potential.
+The dimensionless GPE in a harmonically trapped system is defined as 
+$$i\frac{\partial\psi}{\partial t}=-\frac{1}{2}\nabla^2\psi+g_{2D}|\psi|^2\psi+V\psi-\mu_{2D}\psi - i \hbar\Omega\(x\frac{\partial \psi}{\partial y}-y\frac{\partial \psi}{\partial x}\),$$
+where $\psi$ is the condensate wavefunction, $g_{2D}$ is the interaction strength, $V$ is a potential allowing for the use of boundaries and obstacles, $\mu_{2D}$ is the chemical potential, and $\Omega$ is the angular momentum of the rotating frame.
 
-This version of the GPE is valid when properties are scaled with the so called '**harmonic oscillator units**'
+This version of the GPE is valid when properties are scaled with the so called '**harmonic oscillator units**':
+ * Length: $\displaystyle l_r = \sqrt{\frac{\hbar}{m\omega_r}}$,
+ * Energy: $\mu = \hbar\omega_r$,
+ * Time: $\omega_r^{-1}$,
+
+where $\omega_r$ is the trap frequency in the radial direction. To use this system, set `RHSType=1` in `params.in`.
+
+***Note**: Strictly speaking, a 2D mean-field description of an oblate trapped condensate is only valid when $\dfrac{Nal_z^3}{l_r^3}\ll1$, where N is the number of atoms, $a$ is the s-wave scattering length and $l_z=\sqrt{\dfrac{\hbar}{m\omega_z}}$ and $l_r = \sqrt{\dfrac{\hbar}{m\omega_r}}$ are the axial and radial harmonic oscillator lengths.*
 
 
-![HO_Scaling](http://latex.codecogs.com/gif.latex?%5Cdpi{120}%20%5C%5C%5Cmathrm{Energy%3A}~%5Cmu%20%3D%20%5Chbar%20%5Comega_r%20%5C%5C%5Cmathrm{Length%3A}~%5Cl_r%20%3D%20%5Csqrt{%5Cfrac{%5Chbar}{m%5Comega_r}}%20%5C%5C%5Cmathrm{Time%3A}~%20%5Comega_r^{-1},)
-
-where ![omega_r](http://latex.codecogs.com/gif.latex?%5Comega_r) is the trap frequency in the radial direction.  
-*NB. Strictly speaking, a 2D mean-field description of an oblate trapped condensate is only valid when ![condition](http://latex.codecogs.com/gif.latex?%5Cdpi{100}Nal_z^3/l_r^3%5Cll1), where N is the number of atoms, a is the s-wave scattering length and ![l_z](http://latex.codecogs.com/gif.latex?%5Cdpi{100}%5Cl_z%20%3D%20%5Csqrt{%5Chbar/m%5Comega_z}) and ![l_r](http://latex.codecogs.com/gif.latex?%5Cdpi{100}%5Cl_r%20%3D%20%5Csqrt{%5Chbar/m%5Comega_r}) are the axial and radial harmonic oscillator lengths.*
-
-The following parameters are related to the harmonically trapped system.
-
-Parameter | Default | Explanation
---- | --- | ---
-`RHSType` | `1` | GPE Type - Set to `0` for **natural units**, `1` for **harmonic oscillator units**.
-`harm_osc_C` | `2000` | Value of ![g2d](http://latex.codecogs.com/gif.latex?g_{2D})
-`harm_osc_mu` | `25.267` | Value of ![mu2d](http://latex.codecogs.com/gif.latex?%5Cmu_{2D})
-`enableTrap` |`.true.`| Enable or disable the trapping potential
----
 ### Damped GPE
-For both cases of the GPE, an optional damping parameter can be applied, allowing for simulations using the Damped GPE. The damped version of the GPE is a rough and rudimentary simulation of finite temperature effects on BECs.  
-The damped GPE is found by replacing the left hand side of the GPE with ![T_GPE](http://latex.codecogs.com/gif.latex?(i-%5Cgamma)%5Cfrac%7B%5Cpartial%5Cpsi%7D%7B%5Cpartial%20t%7D), where ![gamma](http://latex.codecogs.com/gif.latex?%5Cgamma) is a small positive real parameter controlling the strength of the damping.
+In both the harmonic trap system and the homogeneous system, an optional damping parameter can be applied. The damped version of the GPE is a very rough phenomenological simulation of finite temperature effects on BECs.
 
-In damped GPE simulations, the condensate norm can also be renormalised at every iteration, preventing atom loss for large damping parameters.  
+The damped GPE replaces the left hand side of the GPE with $(i-\gamma)\dfrac{\partial\psi}{\partial t}$, where $\gamma$ is a small positive parameter controlling the rate of damping.
 
-Parameter | Default | Explanation
---- | --- | ---
-`GAMMAC` | `0` | Value of ![gamma](http://latex.codecogs.com/gif.latex?%5Cgamma)
-`rtNorm` |`.false.`| If `.true.` the wavefunction is normalised at every time step
----
-# Numerical Method
-2D-GP uses 4th order Runge-Kutta time stepping on a grid of points with regular spacing in both the x and y dimensions.  
-The solver begins by finding an inital condition using the *imaginary time method*, which obtains a steady solution known as the *ground state*. An optional random perturbation can then be applied to this initial condition.  
-The solver then runs in *real time* producing a solution to the GPE for the given parameters.
+The value of $\gamma$ can be set to 0.01, for example, by adding `GAMMAC=0.01d0` to `params.in`.
 
+# The Numerical Method
+To solve the GPE, 2D-GP uses 4th order Runge-Kutta time stepping on a grid of points with regular spacing in both the $x$ and $y$ dimensions. There are three main modes of time stepping. `ISTEPS` controls how many steps to run *imaginary time propagation*, `DSTEPS` controls how many steps to run with a *highly damped propagation*, and `NSTEPS` controls how many steps of *real time propagation* to run.
 
-The following parameters can be customised,  
+You will want `ISTEPS` and `DSTEPS` to be small or zero, used simply to setup the system, with the majority of time spent running `NSTEPS` of real-time simulation.
 
-Parameter | Default | Explanation
---- | --- | ---
-`NX` | `512` | Number of grid points in the x direction
-`NY` | `512` | Number of grid points in the y direction
-`DSPACE` | `0.1` | Grid spacing in dimensionless units
-`DTSIZE` | `0.002` | Time step size in dimensionless units
-`ISTEPS` | `0` | Number of iterations to run the solver in imaginary time *before* imprinting an initial phase.
-`VSTEPS` | `0` | Number of iterations to run the solver in imaginary time *after* imprinting an initial phase.
-`NSTEPS` | `1000` | Number of iterations to run the solver in real time.
-`noiseamp` | `0` | Amplitude of random noise to add to the ground state initial condition
+### Imaginary Time Propagation
+
+For imaginary time propagation we move from real to imaginary time using the substitution $t_i = -it$. This transforms the GPE into a form similar to a diffusion equation. As a result, a local equilibrium can be found by propagating through time. This causes the system to approach a ground state solution. The cost of using a diffusion equation is that solution decays over time. We inhibit the overall decay of the wavefunction by renormalising during imaginary time propagation. The imaginary time propagation method converges on the ground state solution very slowly and so we must perform many numerical steps to prepare an initial state.
+
+The renormalisation step forces the solution to have a constant norm throughout imaginary time propagation. The norm that the system is renormalised to depends on the choice of GPE units, but it is fundamentally an approximation based on the size of the condensate and the imposed potential, $V$. This works well when $\gamma=0$, because then the energy and norm are conserved during real time simulation. However, when $\gamma \ne 0$ the system is slightly dissipative and so the energy and norm change over time to approach the energy and norm of the true ground state solution. If the norm approximation by 2D-GP is particularly bad, this can be noticeable.
+
+Imaginary time propagation is run before the initial condition defined in the file `ic.in` is multiplied into the system.
+
+### Highly Damped Propagation
+
+After imaginary time propagation, initial conditions (defined in `ic.in`) are applied and the system is run with a highly damped GPE for `DSTEPS` steps. During this period the system will continue to approach the ground state. Running highly damped propagation for a short amount of time has two benefits:
+ * If your initial condition in `ic.in` is a combination of several solutions multiplied into the system, the resulting wavefunction is most likely not a true solution of the GPE and so an immediate emission of sound can occur. With highly damped propagation the initial start to the simulation is 'smoothed' as any emitted sound is damped away
+ * If the norm approximation used by 2D-GP in imaginary time propagation is particularly bad, running the system highly damped for a short amount of time forced the norm of the system to approach the norm of the true ground state solution.
+
+By default, the phase of the system is continually enforced during this period. This can be disabled by setting `HOLDIC = .false.`. However, in this case `DSTEPS` should be small if you are using a complicated `ic.in`. Vortices, in particular, will approach each other and annihilate unless the phase of the system is enforced throughout.
+
+### Real Time Propagation
+
+After highly damped propagation, numerical noise is optionally applied to break symmetry (with e.g. `noiseamp=0.05d0` in `params.in`) and the system is run normally for `NSTEPS` steps. This is where the majority of GPE simulation occurs and by default it is only the output wavefunction data from this mode that is written to disk.
 
 ### Boundary Conditions
-**Reflective**, **periodic** and **zero** boundary conditions are supported.
+**Reflective**, **periodic** and **zero** boundary conditions are supported and can be independently applied to the $x$ and $y$ directions.
 
-Parameter | Default | Explanation
---- | --- | ---
-`BCX` | `0` | Boundary conditions in the x direction - Set to `0` for **reflective**, `1` for **periodic**, `2` for **zero**.
-`BCY` | `0` | Boundary conditions in the y direction - Set to `0` for **reflective**, `1` for **periodic**, `2` for **zero**.
----
+`BCX` controls the boundary conditions in the $x$ direction and `BCY` controls the boundary conditions in the $y$ direction. Set to 0 for reflective, 1 for periodic, 2 for zero.
+
+# Adding an Initial Condition
+An initial condition can be imprinted (such as imprinting vortices) at the start of the simulation. `ISTEPS` and `DSTEPS` should be tweaked to reflect how much imaginary time propagation you would like before and after the imprinting.
+
+To add an initial condition, after running `make2dgp` in an empty directory edit the file `ic.in` with Fortran code to be run. Some vortex imprinting functions are provided in the file `utils.f95`. An example ic.in could be:
+```
+!Enter initial conditions in the form
+!call IC(...)
+!
+call insert_vortex(-10.0d0,0.0d0,1)
+call insert_vortex(10.0d0,0.0d0,-1)
+```
+This imprints a vortex phase and density profile at $x,y=(-10,0)$ with positive circulation, and a vortex phase and density profile at $x,y=(10,0)$ with negative circulation.
+
+The `GRID` Fortran variable contains the system wavefunction, it is this variable you should make changes to apply some initial condition. For a complex setup involving temporary variables, you should create a new function in `utils.f95` (using `insert_vortex` as a template) and call your new function from `ic.in`.
+
+# Trapping and Obstacle Potentials
+Trapping and obstacle potentials are controlled separately and combined by 2D-GP to form the potential term in the GPE, $V = V_{\text{trap}}+V_{\text{obj}}$. The potential is measured in units of $\mu$.
+
+## Trapping Potential $V_{\text{trap}}$
+
+To enable a trapping potential, set `enableTrap=.true.` in `params.in`. The type of trapping potential is chosen by setting the `trapType` variable.
+
+### Harmonic Trap
+`trapType=0` sets up a standard trapping potential for use with a harmonically trapped system, $$V_{\text{trap}} = \frac{r^2}{2}.$$
+
+### Hard Circle Trap
+`trapType=1` sets up a hard wall potential that takes the value of 0 inside the trap boundary and some maximum value outside. The shape of the trap boundary is a circle,
+$$V_{\text{trap}} = \begin{cases}
+T_{\text{max}},  & \text{if $|r|>T_r$,}\cr
+0, & \text{otherwise.}
+\end{cases}$$
+where $T_{\text{max}}$ (`TRAPHEIGHT`) is the maximum value of the trapping potential and $T_r$ (`TRAPR`) is the radius of the boundary.
+
+### Hard Box Trap
+`trapType=2` sets up a hard wall potential that takes the value of 0 inside the trap boundary and some maximum value outside. The shape of the trap boundary is a box,
+$$V_{\text{trap}} = \begin{cases}
+T_{\text{max}},  & \text{if $|x|>T_r$ or $|y|>T_r$,}\cr
+0, & \text{otherwise,}
+\end{cases}$$
+where $T_{\text{max}}$ (`TRAPHEIGHT`) is the maximum value of the trapping potential and $T_r$ (`TRAPR`) is a the size of the bounding box.
+
+### Soft Circle Trap
+`trapType=3` sets up a smoothly varying potential that takes the value of 0 inside the trap boundary and some maximum value outside. The shape of the trap boundary is a circle,
+$$V_{\text{trap}} = \frac{T_{\text{max}}}{1+e^{T_{\beta}(T_r-|r|)}},$$
+where $T_{\text{max}}$ (`TRAPHEIGHT`) is the maximum value of the trapping potential, $T_r$ (`TRAPR`) is the radius of the bounding circle, and $T_{\beta}$ (`TRAPBETA`) controls the steepness of the soft wall.
+
+### Soft Box Trap
+`trapType=4` sets up a smoothly varying potential that takes the value of 0 inside the trap boundary and some maximum value outside. The potential is defined in terms of 
+$$V_{\text{box}} = \frac{T_{\text{max}}}{1+e^{T_{\beta}(T_r-|x|)}} + \frac{T_{\text{max}}}{1+e^{T_{\beta}(T_r-|y|)}}.$$
+So that the shape of the trap boundary is a box,
+$$V_{\text{trap}} = \begin{cases}
+T_{\text{max}},  & \text{if $V_{\text{box}}>T_{\text{max}}$}\cr
+V_{\text{box}}, & \text{otherwise,}
+\end{cases}$$
+where $T_{\text{max}}$ (`TRAPHEIGHT`) is the maximum value of the trapping potential, $T_r$ (`TRAPR`) is the radius of the bounding circle, and $T_{\beta}$ (`TRAPBETA`) controls the steepness of the soft wall.
+
+
+### The Shin Experiment
+
+An optional mode can be enabled emulating an experiment where an oblate BEC was dragged around a stationary laser obstacle by translating the trap.
+The simulation starts with a stationary trap. The velocity of the trap is increased to its maximum, and finally is slowed down back to stationary after a fixed period of time.
+
+Parameter  | Explanation
+--- | ---
+`doShin` | Set to `.true.` to enable the Shin experiment.
+`TVXDASH` | Trap's maximum velocity in the *x* direction.
+`TVYDASH` | Trap's maximum velocity in the *y* direction.
+`TTM` | Amount of time the trap will be moving.
+
+## Object Potential $V_{\text{obj}}$
+
+To enable an object potential, set `enablePot=.true.` in `params.in`. The type of trapping potential is chosen by setting the `potType` variable.
+
+### Gaussian Object
+`potType=0` enables a Gaussian Obstacle of the form
+$$V_{\text{obj}} = V_{\text{max}} \exp \left[ \frac{(x-x_0)^2}{r_x^2} + \frac{(y-y_0)^2}{r_y^2} \right],$$
+where $r_x$ (`RRX`) and $r_y$ (`RRY`) are the obstacle radius along the $x$ and $y$ directions and $(x_0,y_0)$ (`OBJXDASH`, `OBJYDASH`) is the obstacle position. $V_{\text{max}}$ (`OBJHEIGHT`) is the maximum height of the potential.
+
+#### Oscillation
+The Gaussian obstacle can forced to oscillate, emulating wires or tuning forks as used in liquid helium experiments. The oscillation is achieved by a coordinate transform for the obstacle only of $x\rightarrow x+A\sin(\omega t)$, where $A$ (`OBJAMP`) is the oscillation amplitude and $\omega$ (`OBJW`) the frequency.
+
+#### Rotating
+`potType=1` enables a rotating Gaussian obstacle. The obstacle can rotate freely about its centre, and reacts to forces and pressures exerted by the fluid.  Here the obstacle has an initial angle (`OBJANGLE`), initial angular velocity (`OBJANGLEV`) and a [moment of inertia](http://en.wikipedia.org/wiki/Moment_of_inertia) (`MOMINERTIA`).
+
+### Bitmap Sourced Potential
+`potType=4` enables the loading of a bitmap image which is then used to define a potential. To use this feature first create a grayscale bitmap of size (`NX+1` $\times$ `NY+1`). White areas correspond to areas where the potential will be equal to $V_{\text{max}}$ (`OBJHEIGHT`), while black areas correspond to areas where the potential will be 0. Grayscale colours will cause the potential to scale between 0 and $V_{\text{max}}$.
+
+Set the parameter `pot_filename` equal to the location of the potential `.bmp` image.
+
 # Output Data
-Data is output every set amount of time steps. This output frequency can be easily customised
+Data is output every set amount of time steps. This output frequency can be easily customised. `dumpwf` sets the wavefunction output frequency and `dumputil` sets the utility output frequency.
 
-Parameter | Default | Explanation
---- | --- | ---
-`dumpwf` | `100` | Wavefunction output frequency
-`dumputil` | `100` | Force/energy output frequency
-
-
-### Wavefunction Files
+### Wavefunction Output
 
 Wavefunction files are output with the filename: `dumpwf.ssssss.nc`. Here `ssssss` is the number of the output file. e.g `dumpwf.000000.nc`.
 
-These files are formatted as NetCDF files with and contain the following:
-Name | Description
---- | --- 
-`x` | Grid points along the x dimension
-`y` | Grid points along the y dimension
-`real` | Real part of the system wavefunction
-`imag` | Imaginary part of the system wavefunction
-`pot` | The current external potential field.
+These files are formatted as NetCDF files and contains the following data:
 
-#### Reading the files
+Name | Size |Description
+--- | --- |--- 
+`x` | `NX+1` |Grid points along the x dimension
+`y` | `NY+1`  |Grid points along the y dimension
+`real` | (`NX+1` $\times$ `NY+1`) |Real part of the system wavefunction
+`imag` | (`NX+1` $\times$ `NY+1`) |Imaginary part of the system wavefunction
+`pot` | (`NX+1` $\times$ `NY+1`) |The current external potential field.
+
+#### Reading Wavefunction Output
 Included in the `scripts` folder is a matlab script named `gpeget2dPSI.m`. Use this file to load the output wavefunction data into matlab for post processing. The function takes the simulation directory and the number of the data file.
 ```
 [gridx,gridy,psi,potential] = gpeget2dPSI('/directory/to/simulation',250);
 ```
 
-### Internal calculation frequency
+### Utility Output
 
-The fluid force and energy are calculated by default every 100 time steps. If rotating or oscillating obstacles are used it my be useful to increase the `dumputil` frequency.  
-
-The solver will also output a file, named `utils.dat`, outputting at the same frequency.
-This file is in the following format:
+The energy and norm are calculated and output by default every 100 time steps as diagnostic check as the simulation is running. 2D-GP will create a file at the start of the simulation named `utils.dat`, and continuously write to the file with:
 
 Column 1 | Column 2 | Column 3 | Column 4
 --- | --- | --- | ---
-Time, *t* | Total energy of the fluid at *t* | Net force in the *x* direction at *t* | Net force in the *y* direction at *t*
----
-# Initial Vortex Imprinting
-An initial confiuguration of quantum vortices can be imprinted at the start of the simulation. ``ISTEPS`` and ``VSTEPS`` can be changed to reflect how much imaginary time propogation you would like before and after the imprinting. I recommend that only a small amount of ``VSTEPS`` be used to smooth the inital wavefunction - too much and your imprinted vortices will simply annihilate.
-
-To imprint vortices, after running `make2dgp` in an empty directory, edit the file ic.in with the fortran code you would  like to run in the imprinting step. Some vortex imprinting functions are provided in the file `utils.f95`. An example ic.in could be:
-```
-!Enter initial conditions in the form
-!call IC(...)
-!
-call insert_vortex(-10.0d0,0.0d0,1.0d0)
-call insert_vortex(10.0d0,0.0d0,-1.0d0)
-```
-This imprints a vortex phase and density profile at ![xy](http://latex.codecogs.com/gif.latex?x,y=(-10,0)) with positive circulation, and a vortex phase and density profile at ![xy](http://latex.codecogs.com/gif.latex?x,y=(10,0)) with negative circulation.
-
----
-# Potentials and Obstacles
-A harmonic potential trap, obstacles with various properties, and loading of heightmap data is supported.
-The potential must be globally enabled before enabling the trap or obstacle.
-
-Parameter | Default | Explanation
---- | --- | ---
-`enablePot` | `.true.` | Enable the potential term in the GPE globally.
-`enableTrap` | `.false.` | Enable the potential trap.
-`potType` | `-1` | Obstacle type - Set to `-1` for no obstacle, `0` for a fixed Gaussian "laser beam", `1` for a freely rotating Gaussian obstacle, `2` for an oscillating Gaussian obstacle, `4` for a bitmap sourced potential, `6` for a hard boundary.
-`potRep` | `0` | Set to `0` to calculate the potential once (for fixed potentials). Set to `1` if the potential varies in time and must be recalculated at every time step.
----
-
-### Potential Trap
-The potential trap is used to confine the fluid, emulating BEC experiments. When enabled a harmonic trapping potential is used and is of the form
-![V_trap](http://latex.codecogs.com/gif.latex?V_%7B%5Cmathrm%7Btrap%7D%7D%28x%2Cy%29%3Dm%5Comega_r%5E2%28[x-x_0]%5E2&plus;[y-y_0]%5E2%29/2)
-
-Parameter | Default | Explanation
---- | --- | ---
-`TXDASH`|`0`| Value for ![x_0](http://latex.codecogs.com/gif.latex?x_0), center of the harmonic trap in *x*.
-`TYDASH`|`0`| Value for ![y_0](http://latex.codecogs.com/gif.latex?y_0), center of the harmonic trap in *y*.
-
-An optional mode can be enabled emulating an experiment where an oblate BEC was dragged around a stationary laser obstacle by translating the trap.
-The simulation starts with a stationary trap. The velocity of the trap is increased to its maximum, and finally is slowed down back to stationary after a fixed period of time.
-
-Parameter | Default | Explanation
---- | --- | ---
-`doShin` | `.false.` | Optional translated trap mode - set to `.false.` for a stationary trap,  `.true.` for a moving trap.
-`TVXDASH` | `0` | Trap's maximum velocity in the *x* direction.
-`TVYDASH`| `0` | Trap's maximum velocity in the *y* direction.
-`TTM`| `0` | Amount of time the trap will be moving.
-
----
-
-### Gaussian Obstacles
-When enabled, a Gaussian Obstacle is added to the potential in the form  
- ![V_obs](http://latex.codecogs.com/gif.latex?V_%7B%5Cmathrm%7Bobs%7D%7D%28x%2Cy%29%3DV_0%5Cmathrm%7Bexp%7D%5Cleft%5B%5Cfrac%7B%28x-x_0%29%5E2%7D%7Br_x%5E2%7D&plus;%5Cfrac%7B%28y-y_0%29%5E2%7D%7Br_y%5E2%7D%5Cright%5D),
- 
- where ![rxy](http://latex.codecogs.com/gif.latex?r_x,r_y) are the obstacle radius and ![x0y0](http://latex.codecogs.com/gif.latex?x_0,y_0) are the obstacle position. ![V0](http://latex.codecogs.com/gif.latex?V_0) is a measure of the strength of the gaussian beam, measured in units of ![mu](http://latex.codecogs.com/gif.latex?%5Cmu).
-
-The following parameters must be set for any of the Gaussian obstacles
-
-Parameter | Default | Explanation
---- | --- | ---
-`RRX`|`2.0`| Value for ![rx](http://latex.codecogs.com/gif.latex?r_x), radius in the *x* direction.
-`RRY`|`2.0`| Value for ![ry](http://latex.codecogs.com/gif.latex?r_y), radius in the *y* direction.
-`OBJXDASH` | `0` | Value for ![x0](http://latex.codecogs.com/gif.latex?x_0), the obstacle's *x* position.
-`OBJYDASH` | `0` | Value for ![y0](http://latex.codecogs.com/gif.latex?y_0), the obstacle's *y* position.
-`OBJHEIGHT`| `0` | Value for ![V0](http://latex.codecogs.com/gif.latex?V_0), the barrier height. The default height of  of 0 is equivalent to no obstacle.
-
-### Rotating Obstacle
-A rotating obstacle can be enabled. The obstacle can then rotate freely about its center, and reacts to forces and pressures exerted by the fluid.  Here the obstacle has an initial angle, initial angular velocity and a moment of inertia.
-This mode only really makes sense for an elliptical obstacle.
-
-Parameter | Default | Explanation
---- | --- | ---
-`OBJANGLE`|`0.1`|Initial obstacle velocity
-`OBJANGLEV`|`0.1`|Initial angular velocity
-`MOMINERTIA`|`0.000001`| Obstacle's [Moment of Inertia](http://en.wikipedia.org/wiki/Moment_of_inertia)
-
-### Oscillating Obstacle
-An oscillating obstacle can be enabled, emulating wires or tuning forks as used in liquid helium experiments. The obstacle acts like a forced harmonic oscillator, damped by any net forces and pressure exerted by the fluid.
-Setting the forcing frequency to approximately the obstacle's natural frequency will induce resonance.
-
-Parameter | Default | Explanation
---- | --- | ---
-`FVAL`|`0`|Amplitude of forced oscillation
-`WF`|`0.1`|Frequency of forced oscillation
-`W0`|`0.05`| Obstacle's [natural frequency](http://en.wikipedia.org/wiki/Natural_frequency).
-
-### Bitmap Sourced Potential
-2D-GP supports the loading of bitmap images which can then be used to define a potential. To use this feature first create a grayscale bitmap of size (`NX`+1) by (`NY`+1). White areas correspond to areas where the potential will be high, while black areas correspond to areas where the potential will be 0. Grayscale colours will cause the potential to scale between 0 and `OBJHEIGHT`.
-
-Parameter | Default | Explanation
---- | --- | ---
-`pot_filename`|` `| Location of the potential bmp image
+$-it$, imaginary time | $t$, simulation time | $E$, the total energy at time $t$ | $N$, the norm at time $t$
 
 # Example `params.in`
 
-An example (and default) `params.in` is provided by 2D-GP, and looks like this:
+An example (and default) `params.in` is provided by 2D-GP. It sets up a trapped BEC system and and looks like this:
 ```
 !Enter custom parameters in the form
 !PARAMETER_NAME = VALUE
 !
 NX = 256
 NY = 256
-NSTEPS=50000
-VSTEPS=0
-ISTEPS=10
+NSTEPS=5000
+DSTEPS=1000
+ISTEPS=100
 
+GAMMAC = 0.1d0
 DSPACE = 0.1d0
 DTSIZE = 0.002d0
 
 RHSType = 1
-ROM = 0.6d0
 BCX = 1
 BCY = 1
 harm_osc_C = 2000.0d0
 harm_osc_mu = 25.26698674d0
 
-enablePot = .true.
 enableTrap = .true.
-TXSCALE = 0.97d0
-GAMMAC = 0.1d0
+trapType = 0
 ```
 
-This should show you enough to work out how to use the parameters shown throught this document.
+## List of Parameters
+
+Parameter | Default, if omitted | Explanation
+--- | --- | ---
+`NSTEPS` | `1000` | Number of iterations to run the solver in real time.
+`ISTEPS` | `0` | Number of iterations to run the solver in imaginary time.
+`DSTEPS` | `0` | Number of iterations to run the solver highly damped.
+`HOLDIC` | `.true.` | If true, the phase defined in `ic.in` is constantly re-imprinted during `ISTEPS` and `DSTEPS`.
+`PLOTALL` | `.false.` | If true, wavefunction files are written during `ISTEPS` and `DSTEPS`.
+`NX` | `512` | Number of grid points in the x direction, not including an extra grid point for zero.
+`NY` | `512` | Number of grid points in the y direction, not including an extra grid point for zero.
+`DSPACE` | `0.1` | Grid spacing in dimensionless units
+`DTSIZE` | `0.002` | Time step size in dimensionless units
+`dumpwf` | `100` | Wavefunction output frequency
+`dumputil` | `100` | Force/energy output frequency
+`RHSType` | `1` | GPE Type - `0` for **natural units**, `1` for **harmonic oscillator units**.
+`harm_osc_C` | `2000` | Value of $g_{2D}$.
+`harm_osc_mu` | `25.267` | Value of $\mu_{2D}$.
+`GAMMAC` | `0` | Value of $\gamma$.
+`NORMALL` | `.false` | If true, the GPE is renormalised every time step.
+`BCX` | `0` | Boundary conditions in the x direction.
+`BCY` | `0` | Boundary conditions in the y direction.
+`noiseamp` | `0` | Amplitude of random noise to add to the initial condition.
+`ROM` | `0` | Angular momentum of the rotating frame, $\Omega$
+`VOB` | `0` | Velocity of the linearly translating frame, $v_{ob}$
+`enablePot` | `.true.` | Enable the potential obstacle.
+`potType` | `-1` | Obstacle type.
+`RRX`|`2.0`| Value for $r_x$, obstacle radius in the $x$ direction.
+`RRY`|`2.0`| Value for $r_y$, obstacle radius in the $y$ direction.
+`OBJHEIGHT`| `50` | Value for $V_{\text{max}}$, the maximum barrier height. A maximum height of 0 is equivalent to having no obstacle.
+`OBJXDASH` | `0` | Value for $x_0$, the obstacle's $x$ position.
+`OBJYDASH` | `0` | Value for $y_0$, the obstacle's $y$ position.
+`OBJAMP`| `0` | Oscillating obstacle's amplitude.
+`OBJW`| `0` | Oscillating obstacle's frequency.
+`OBJANGLE`|`0.1`|Initial obstacle angle for rotating obstacle.
+`OBJANGLEV`|`0.1`|Initial angular velocity for rotating obstacle.
+`MOMINERTIA`|`0.000001`| Rotating obstacle's [Moment of Inertia](http://en.wikipedia.org/wiki/Moment_of_inertia)
+`enableTrap` | `.true.` | Enable the potential trap.
+`trapType` | `-1` | Trap type.
+`TRAPHEIGHT`| `50` | Value for $T_{\text{max}}$, the maximum trap height. A maximum height of 0 is equivalent to having no trapping potential.
+`TXDASH`|`0`| Value for $x_0$, center of the trap in $x$.
+`TYDASH`|`0`| Value for $y_0$, center of the trap in $y$.
+`TXSCALE`| `1` | A scaling factor for the trap in $x$.
+`TYSCALE`| `1` | A scaling factor for the trap in $y$.
+`TRAPR`| `5` | Box/Circle trap size.
+`TRAPBETA`| `2` | Soft wall trap steepness.
+`potRep` | `.false.` | If true, recalculates the potential term $V$ at every time step.
+`doShin` | `.false.` | If true, runs a simulation of the Shin experiment.
+`TTM`| `0` | Amount of time the trap will be moving in the Shin experiment.
+`TVXDASH` | `0` | Trap's maximum velocity in the $x$ direction in the Shin experiment.
+`TVYDASH`| `0` | Trap's maximum velocity in the $y$ direction in the Shin experiment.
+`pot_filename` | '' | Filename for bitmap sourced potential.
+
+
+# TODO: Vortex Killing and damped region
+```
+  !Vortex Killer
+  logical :: doVortexKilling = .false.
+  logical :: vortexKillX = .true.
+  logical :: vortexKillY = .false.
+  double precision :: vortexKillXDist = 40.0d0
+  double precision :: vortexKillYDist = 0.0d0
+  integer :: vortexKillFreq = huge(100)
+  integer :: killgamma = 0
+  !Damping radius
+  logical :: dampedX = .false.
+  logical :: dampedY = .false.
+  logical :: dampedR = .false.
+  double precision :: dampedXDist = 10.0d0
+  double precision :: dampedYDist = 0.0d0
+  double precision :: dampedRDist = 0.0d0
+  double precision :: dampedRWidth = 10.0d0
+  double precision :: dampedGamma = 0.0d0
+```

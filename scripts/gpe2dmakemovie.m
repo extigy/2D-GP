@@ -3,8 +3,8 @@ function gpe2dmakemovie(dirarg,startno,stride,endno)
     pngfolder = strcat(dirarg, '/png');
     mkdir(pngfolder);
     for i=startno:stride:endno
-        [gridx,gridy,psi,potential] = gpeget2dPSI(dirarg,i);
-        [xlocs,ylocs,pol] = gpeget2dvort(psi,gridx,gridy,'potential',potential);
+        [gridx,gridy,psi,~] = gpeget2dPSI(dirarg,i);
+        [xlocs,ylocs,pol] = gpeget2dvort(psi,gridx,gridy);
         dens = abs(psi).^2;
         fprintf('read %d\n',i);
         j = i/stride;

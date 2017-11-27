@@ -13,6 +13,9 @@ subroutine calc_OBJPOT
             if(potType .eq. 1) then
                 call calc_OBJPOT_rot
             end if
+            if(potType .eq. 2) then
+                call calc_OBJPOT_pins_square
+            end if
             if(potType .eq. 4) then
                 call calc_OBJPOT_img
             end if
@@ -22,16 +25,16 @@ subroutine calc_OBJPOT
                 call add_harmonic_trap
             end if
             if (trapType .eq. 1) then
-                call add_soft_box_trap
+                call add_hard_circle_trap
             end if
             if (trapType .eq. 2) then
-                call add_hard_box_trap
+                call add_hard_box_trap 
             end if
             if (trapType .eq. 3) then
                 call add_soft_circle_trap
             end if
             if (trapType .eq. 4) then
-                call add_hard_circle_trap
+                call add_soft_box_trap
             end if
 
         end if
@@ -64,7 +67,7 @@ subroutine add_soft_circle_trap
         rx = (dble(i)*DSPACE)-TXDASH
         ry = (dble(j)*DSPACE)-TYDASH
         r = SQRT(rx**2.0+ry**2.0)
-        OBJPOT(i,j) = OBJPOT(i,j)+MIN(TRAPHEIGHT,0.5d0*(r**2)*((r/TRAPR)**TRAPBETA))
+        OBJPOT(i,j) = OBJPOT(i,j)+TRAPHEIGHT/(1.0d0+EXP(-TRAPBETA*(ABS(rx)-TRAPR)))
     end do
     end do
     !$OMP END PARALLEL DO
@@ -81,13 +84,15 @@ subroutine add_hard_circle_trap
         rx = (dble(i)*DSPACE)-TXDASH
         ry = (dble(j)*DSPACE)-TYDASH
         r = SQRT(rx**2.0+ry**2.0)
-        OBJPOT(i,j) = OBJPOT(i,j)+MIN(TRAPHEIGHT,0.5d0*(r**2)*((r/TRAPR)**TRAPBETA))
+        if (r > TRAPR) then
+            OBJPOT(i,j) = OBJPOT(i,j)+TRAPHEIGHT
+        end if
     end do
     end do
     !$OMP END PARALLEL DO
 end subroutine
 
-subroutine add_hard_box_trap
+subroutine add_soft_box_trap
     use params
     implicit none
     integer :: i,j
@@ -97,15 +102,14 @@ subroutine add_hard_box_trap
         do j = -NY/2,NY/2
             rx = (dble(i)*DSPACE)-TXDASH
             ry = (dble(j)*DSPACE)-TYDASH
-            if (abs(rx) > TRAPR .OR. abs(ry) > TRAPR) then
-                OBJPOT(i,j) = OBJPOT(i,j)+MIN(TRAPHEIGHT,0.5d0*(rx**2)*((rx/TRAPR)**TRAPBETA)+0.5d0*(ry**2)*((ry/TRAPR)**TRAPBETA))
-            end if
+            OBJPOT(i,j) = OBJPOT(i,j)+MIN(TRAPHEIGHT,TRAPHEIGHT/(1.0d0+EXP(-TRAPBETA*(ABS(rx)-TRAPR)))+&
+                                          TRAPHEIGHT/(1.0d0+EXP(-TRAPBETA*(ABS(ry)-TRAPR))))
         end do
     end do
     !$OMP END PARALLEL DO
 end subroutine
 
-subroutine add_soft_box_trap
+subroutine add_hard_box_trap
     use params
     implicit none
     integer :: i,j
@@ -134,6 +138,23 @@ subroutine calc_OBJPOT_obj
             rx = (dble(i)*DSPACE)-OBJXDASH-(OBJAMP*sin(OBJW*TIME))
             ry = (dble(j)*DSPACE)-OBJYDASH
             OBJPOT(i,j) = OBJHEIGHT*EXP(-(1.0d0/RRX**2.0d0)*(rx**2.0d0) - (1.0d0/RRY**2.0d0)*(ry**2.0d0))
+        end do
+    end do
+    !$OMP END PARALLEL DO
+end subroutine
+
+subroutine calc_OBJPOT_pins_square
+    use params
+    implicit none
+    integer :: i,j
+    double precision :: rx,ry,rxy
+    !$OMP PARALLEL DO
+    do i = -NX/2,NX/2
+        do j = -NY/2,NY/2
+            rx = (dble(i)*DSPACE)-OBJXDASH
+            ry = (dble(j)*DSPACE)-OBJYDASH
+            rxy = (MODULO(rx,OBJPINSDIST)-(OBJPINSDIST/2.0d0))**2.0d0 + (MODULO(ry,OBJPINSDIST)-(OBJPINSDIST/2.0d0))**2.0d0
+            OBJPOT(i,j) = OBJHEIGHT*EXP(-(1.0d0/OBJPINSSIG**2.0d0)*rxy)
         end do
     end do
     !$OMP END PARALLEL DO

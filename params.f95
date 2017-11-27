@@ -47,13 +47,17 @@ module params
   double precision :: RRY=2.0d0
   double precision :: OBJXDASH=0.0d0
   double precision :: OBJYDASH=0.0d0
-  double precision :: OBJHEIGHT=0.0d0
+  double precision :: OBJHEIGHT=50.0d0
   !Rotating Obj
   double precision :: OBJANGLE=0.1d0
   double precision :: OBJANGLEV=0.1d0
   double precision :: MOMINERTIA=0.000001d0
   !Oscillating Obj
   double precision :: OBJAMP = 0.0d0, OBJW = 0.05d0 !amp, freq
+  !Pins
+  double precision :: OBJPINSSIG = 0.5d0
+  double precision :: OBJPINSDIST = 3.0d0
+
   !Trap Settings
   double precision :: TXDASH=0.0d0
   double precision :: TYDASH=0.0d0

@@ -2,7 +2,7 @@ function [gridx,gridy,psi,potential] = gpeget2dPSI(dirarg,frame,varargin)
 p = inputParser;
 addRequired(p,'dirarg');
 addRequired(p,'frame');
-addParameter(p,'prefix','dumpwf');
+addParameter(p,'prefix','psi');
 parse(p,dirarg,frame,varargin{:});
 dirarg = regexprep(dirarg, '/$', '');
 datalocation = strcat(dirarg, '/',p.Results.prefix,'.%06d.nc');

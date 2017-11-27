@@ -5,3 +5,8 @@ tmp*
 *~
 */*~
 scripts/misc
+scripts/hungarianlinker.m
+scripts/munkres.m
+scripts/nearestneighborlinker.m
+scripts/simpletracker.m
+
