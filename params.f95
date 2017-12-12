@@ -119,10 +119,8 @@ contains
     include 'params.in'
     ALLOCATE(GRID(-NX/2:NX/2,-NY/2:NY/2))
     ALLOCATE(OBJPOT(-NX/2:NX/2,-NY/2:NY/2))
-    if (HOLDIC) then
-      ALLOCATE(IMPOSEDPHASE(-NX/2:NX/2,-NY/2:NY/2))
-      IMPOSEDPHASE = 1.0d0
-    end if
+    ALLOCATE(IMPOSEDPHASE(-NX/2:NX/2,-NY/2:NY/2))
+    IMPOSEDPHASE = 1.0d0
     GRID = 0.0d0
     OBJPOT = 0.0d0
     TIME = 0.0d0

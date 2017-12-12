@@ -228,6 +228,26 @@ subroutine insert_rand_vortices(n,r,circ,seed)
     GRID = sqrt(GRID*conjg(GRID))*IMPOSEDPHASE
 end
 
+subroutine insert_rand_vortices_sq(n,r,circ,seed)
+    use params
+    implicit none
+    integer :: i,j,k,n,seed,circ
+    double precision ::xloc,yloc,xx,yy,r
+    call srand(seed+circ+1)
+    do k=1,n
+        xloc = rand()*r - (r/2.0d0)
+        yloc = rand()*r - (r/2.0d0)
+        do i = -NX/2, NX/2
+            do j = -NY/2, NY/2
+                xx = (i*DSPACE)
+                yy = (j*DSPACE)
+                IMPOSEDPHASE(i,j) = IMPOSEDPHASE(i,j)*exp(circ*EYE*(atan2(yy-yloc,xx-xloc)))
+            end do
+        end do
+    end do
+    GRID = sqrt(GRID*conjg(GRID))*IMPOSEDPHASE
+end
+
 subroutine insert_vortex(xloc,yloc,circ)
     use params
     implicit none

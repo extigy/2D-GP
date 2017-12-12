@@ -82,7 +82,7 @@ subroutine iterate (renorm,gammaVal)
             call calc_norm
             !Approximate what norm should be to get psi_inf=1
             GRID = GRID/sqrt(NORM)
-            GRID = GRID*sqrt(DSPACE*DSPACE*COUNT(OBJPOT>1.0d0))
+            GRID = GRID*sqrt(DSPACE*DSPACE*COUNT(OBJPOT<1.0d0))
         end if
         if (RHSType .eq. 1) then
             call calc_norm
