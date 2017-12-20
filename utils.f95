@@ -232,7 +232,7 @@ subroutine insert_rand_vortices_sq(n,r,circ,seed)
     use params
     implicit none
     integer :: i,j,k,n,seed,circ
-    double precision ::xloc,yloc,xx,yy,r
+    double precision ::xloc,yloc,xx,yy,r,xt,yt
     call srand(seed+circ+1)
     do k=1,n
         xloc = rand()*r - (r/2.0d0)
@@ -241,7 +241,24 @@ subroutine insert_rand_vortices_sq(n,r,circ,seed)
             do j = -NY/2, NY/2
                 xx = (i*DSPACE)
                 yy = (j*DSPACE)
+                xt = (NX*DSPACE)
+                yt = (NY*DSPACE)
+                !Imprint, including periodic boundary ghosts
                 IMPOSEDPHASE(i,j) = IMPOSEDPHASE(i,j)*exp(circ*EYE*(atan2(yy-yloc,xx-xloc)))
+                if(BCX .eq. 1) then
+                    IMPOSEDPHASE(i,j) = IMPOSEDPHASE(i,j)*exp(circ*EYE*(atan2(yy-yloc,xx-xloc-xt)))
+                    IMPOSEDPHASE(i,j) = IMPOSEDPHASE(i,j)*exp(circ*EYE*(atan2(yy-yloc,xx-xloc+xt)))
+                end if
+                if(BCY .eq. 1) then
+                    IMPOSEDPHASE(i,j) = IMPOSEDPHASE(i,j)*exp(circ*EYE*(atan2(yy-yloc-yt,xx-xloc)))
+                    IMPOSEDPHASE(i,j) = IMPOSEDPHASE(i,j)*exp(circ*EYE*(atan2(yy-yloc+yt,xx-xloc)))
+                end if
+                if(BCX .eq. 1 .and. BCY .eq. 1) then
+                    IMPOSEDPHASE(i,j) = IMPOSEDPHASE(i,j)*exp(circ*EYE*(atan2(yy-yloc-yt,xx-xloc-xt)))
+                    IMPOSEDPHASE(i,j) = IMPOSEDPHASE(i,j)*exp(circ*EYE*(atan2(yy-yloc-yt,xx-xloc+xt)))
+                    IMPOSEDPHASE(i,j) = IMPOSEDPHASE(i,j)*exp(circ*EYE*(atan2(yy-yloc+yt,xx-xloc-xt)))
+                    IMPOSEDPHASE(i,j) = IMPOSEDPHASE(i,j)*exp(circ*EYE*(atan2(yy-yloc+yt,xx-xloc+xt)))
+                end if
             end do
         end do
     end do
@@ -252,19 +269,32 @@ subroutine insert_vortex(xloc,yloc,circ)
     use params
     implicit none
     integer :: i,j,circ
-    double precision :: xloc,yloc,rs,xx,yy
-    double precision, dimension(-NX/2:NX/2,-NY/2:NY/2) :: R
-
+    double precision :: xloc,yloc,xx,yy,xt,yt
+    xt = (NX*DSPACE)
+    yt = (NY*DSPACE)
     do i = -NX/2, NX/2
         do j = -NY/2, NY/2
             xx = (i*DSPACE)
             yy = (j*DSPACE)
-            rs=(xx-xloc)**2.0d0 + (yy-yloc)**2.0d0;
+            !Imprint, including periodic boundary ghosts
             IMPOSEDPHASE(i,j) = IMPOSEDPHASE(i,j)*exp(circ*EYE*(atan2(yy-yloc,xx-xloc)))
-            R(i,j) = sqrt(rs*(0.3437+0.0286*rs)/(1+0.3333*rs+0.0286*rs*rs)); 
+            if(BCX .eq. 1) then
+                IMPOSEDPHASE(i,j) = IMPOSEDPHASE(i,j)*exp(circ*EYE*(atan2(yy-yloc,xx-xloc-xt)))
+                IMPOSEDPHASE(i,j) = IMPOSEDPHASE(i,j)*exp(circ*EYE*(atan2(yy-yloc,xx-xloc+xt)))
+            end if
+            if(BCY .eq. 1) then
+                IMPOSEDPHASE(i,j) = IMPOSEDPHASE(i,j)*exp(circ*EYE*(atan2(yy-yloc-yt,xx-xloc)))
+                IMPOSEDPHASE(i,j) = IMPOSEDPHASE(i,j)*exp(circ*EYE*(atan2(yy-yloc+yt,xx-xloc)))
+            end if
+            if(BCX .eq. 1 .and. BCY .eq. 1) then
+                IMPOSEDPHASE(i,j) = IMPOSEDPHASE(i,j)*exp(circ*EYE*(atan2(yy-yloc-yt,xx-xloc-xt)))
+                IMPOSEDPHASE(i,j) = IMPOSEDPHASE(i,j)*exp(circ*EYE*(atan2(yy-yloc-yt,xx-xloc+xt)))
+                IMPOSEDPHASE(i,j) = IMPOSEDPHASE(i,j)*exp(circ*EYE*(atan2(yy-yloc+yt,xx-xloc-xt)))
+                IMPOSEDPHASE(i,j) = IMPOSEDPHASE(i,j)*exp(circ*EYE*(atan2(yy-yloc+yt,xx-xloc+xt)))
+            end if
         end do
     end do
-    GRID = sqrt(GRID*conjg(GRID))*R*IMPOSEDPHASE
+    GRID = sqrt(GRID*conjg(GRID))*IMPOSEDPHASE
 end subroutine
 
 subroutine velxy(phase,velx,vely)
