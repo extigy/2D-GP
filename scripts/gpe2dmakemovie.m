@@ -15,7 +15,8 @@ function gpe2dmakemovie(dirarg,startno,stride,endno)
         axis xy
         hold on
         g = gscatter(xlocs,ylocs,pol,['b','r'],['^','o'],5,'off');
-        if(length(g)==1 && pol(1)==1)
+        if(length(g)==0)
+        elseif(length(g)==1 && pol(1)==1)
             set(g(1), 'MarkerFaceColor', 'r')
             set(g(1),'Marker','o');
             set(g(1),'MarkerEdgeColor','none');

@@ -46,11 +46,13 @@ subroutine add_harmonic_trap
     use params
     implicit none
     integer :: i,j
+    double precision :: rx,ry
     !$OMP PARALLEL DO
     do i = -NX/2,NX/2
     do j = -NY/2,NY/2
-        OBJPOT(i,j) = OBJPOT(i,j) + 0.5d0*TXSCALE*((dble(i)*DSPACE+TXDASH)*(dble(i)*DSPACE+TXDASH))&
-                        +0.5d0*TYSCALE*((dble(j)*DSPACE+TYDASH)*(dble(j)*DSPACE+TYDASH))
+        rx = (dble(i)*DSPACE)-TXDASH-(TRAPAMP*sin(TRAPW*TIME))
+        ry = (dble(j)*DSPACE)-TYDASH
+        OBJPOT(i,j) = OBJPOT(i,j) + 0.5d0*(TXSCALE*rx**2.0 + TYSCALE*ry**2.0)
     end do
     end do
     !$OMP END PARALLEL DO
@@ -64,10 +66,10 @@ subroutine add_soft_circle_trap
     !$OMP PARALLEL DO
     do i = -NX/2,NX/2
     do j = -NY/2,NY/2
-        rx = (dble(i)*DSPACE)-TXDASH
+        rx = (dble(i)*DSPACE)-TXDASH-(TRAPAMP*sin(TRAPW*TIME))
         ry = (dble(j)*DSPACE)-TYDASH
         r = SQRT(rx**2.0+ry**2.0)
-        OBJPOT(i,j) = OBJPOT(i,j)+TRAPHEIGHT/(1.0d0+EXP(-TRAPBETA*(ABS(rx)-TRAPR)))
+        OBJPOT(i,j) = OBJPOT(i,j)+TRAPHEIGHT/(1.0d0+EXP(-TRAPBETA*(ABS(r)-TRAPR)))
     end do
     end do
     !$OMP END PARALLEL DO

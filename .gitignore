@@ -4,6 +4,7 @@ makemovie.sh
 tmp*
 *~
 */*~
+README_files/*
 scripts/misc
 scripts/hungarianlinker.m
 scripts/munkres.m

@@ -69,6 +69,8 @@ module params
   double precision :: TRAPR = 5.0d0
   double precision :: TRAPBETA = 2.0d0
   double precision :: TRAPHEIGHT = 0.0d0
+  double precision :: TRAPAMP = 0.0d0, TRAPW = 0.05d0
+
   !AFM-IMAGE
   character(2048) :: afm_filename
   integer :: afmRES = 256
