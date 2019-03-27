@@ -1,11 +1,7 @@
-#If you do not have a system installed version of libnetcdf-dev or libnetcdff-dev
-#replace these with your local install directories
-NETCDF = /usr
-NETCDF-FORTRAN = /usr
-
-FC = gfortran
-FCFLAGS = -O3 -Wall -march=native -fopenmp -I$(NETCDF)/include -I$(NETCDF-FORTRAN)/include
-LDFLAGS = -lm -lnetcdff -lnetcdf -L$(NETCDF)/lib -L$(NETCDF-FORTRAN)/lib
+FC = $(shell nf-config --fc)
+INCLUDES = $(shell nf-config --fflags) $(foreach d,$(subst :, ,$(CPATH)),-I$d) -I/usr/include
+FCFLAGS = -O3 -Wall -march=native -Wunused -fopenmp $(INCLUDES)
+LDFLAGS = -lm $(shell nf-config --flibs)
 
 PROGRAMS = gp
 

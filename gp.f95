@@ -1,7 +1,6 @@
 program gp
     use params
     use output
-    implicit none
     CALL init_params
     DT = -EYE*DTSIZE
     call calc_OBJPOT

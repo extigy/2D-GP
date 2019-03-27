@@ -97,7 +97,7 @@ function [xlocs,ylocs,pol] = gpeget2dvort(psi,gridx,gridy,varargin)
     
     %Mask using density and potential
     dens = psi.*conj(psi);
-    maskDens = dens>0.1*max(dens(:));
+    maskDens = dens>0.01*max(dens(:));
     maskDensFilled = imfill(maskDens,'holes');
     presort(~maskDensFilled)=0;
     if(sum(p.Results.potential(:)) > 0)

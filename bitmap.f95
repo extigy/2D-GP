@@ -20,8 +20,8 @@ Contains
     use params
     implicit none
     integer :: i,j,nw
-    integer(4) :: read_short
-    integer(8) :: read_long
+    integer(2) :: read_short
+    integer(4) :: read_long
     if (BMPLOADED .eq. 1 ) then
         return
     end if
@@ -41,7 +41,7 @@ Contains
     Header%BitCount = read_short
 
     if (Header%Width .ne. NX+1 .or. Header%Height .ne. NY+1) then
-        write(6,*) "ERROR WRONG BMP SIZE"
+        write(6,*) "ERROR WRONG BMP SIZE: ",Header%Width, " x ",  Header%Height
         stop
     end if
 
